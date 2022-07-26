@@ -3,12 +3,12 @@
 # ad-hoc
 
 /lxplus8_home/
-/dispatch-check-eos/
 /check-eos.yml
 /dispatch-check-eos.yml
 /harbor_secret.txt
 /keytab.krb
 /lxplus8_host.txt
+/lxplus8-ssh-image/keytab.krb
 
 # IDEs
 .idea/
