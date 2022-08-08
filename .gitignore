@@ -9,6 +9,8 @@
 /keytab.krb
 /lxplus8_host.txt
 /lxplus8-ssh-image/keytab.krb
+/lxplus8-ssh-image/os_token.txt
+/.conda/
 
 # IDEs
 .idea/

@@ -1,8 +1,24 @@
 
+
+1. Setup python env
+
+    ```sh
+    conda create \
+        -y -p ./.conda \
+        'python==3.10.0' \
+        --channel conda-forge
+    emulate ksh -c "source activate ./.conda/"
+    pip install \
+        "keystoneauth1[kerberos]==4.0.0" \
+        "python-openstackclient==5.2.0" \
+        "python-magnumclient==3.0.1" \
+        --ignore-installed
+    ```
+
 1. Setup ssh
 
     ```sh
-    emulate ksh -c "source ./manage.sh setup_ssh"
+    bash manage.sh setup_ssh
     ```
 
 1.

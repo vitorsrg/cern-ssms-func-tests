@@ -61,17 +61,27 @@ manage::remount () {
 
 manage::docker_build () {
 	set -x
+
 	cp -rf ./keytab.krb ./lxplus8-ssh-image/keytab.krb
+
+	ssh \
+		"vsantaro@$(cat lxplus8_host.txt)" \
+		'export OS_PROJECT_NAME="IT Cloud Infrastructure Developers"; openstack token issue -f json' \
+		| jq -r '.id' \
+		> ./lxplus8-ssh-image/os_token.txt
+
+	
 	docker build \
 		-t registry.cern.ch/vsantaro/lxplus8-ssh-image \
 		--build-arg lxplus8_host="$(cat lxplus8_host.txt)" \
 		--squash \
 		./lxplus8-ssh-image
+	# Login to < https://registry.cern.ch/ > with SSO in the browser
 	cat ./harbor_secret.txt \
-	| docker login \
-		registry.cern.ch \
-		--username vsantaro \
-		--password-stdin
+		| docker login \
+			registry.cern.ch \
+			--username vsantaro \
+			--password-stdin
 	docker push registry.cern.ch/vsantaro/lxplus8-ssh-image
 }
 
