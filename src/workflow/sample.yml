@@ -1,0 +1,132 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dispatch-sample
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: ""
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: create-cluster
+            template: create-cluster
+        - - name: wait-cluster-ready
+            template: wait-cluster-ready
+        - - name: exec-test
+            template: exec-test
+        - - name: delete-cluster
+            template: delete-cluster
+
+    - name: create-cluster
+      script:
+        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+        command: [/bin/bash]
+        source: |
+          #!/bin/bash
+
+          set -ex
+
+          source /root/os_rc_token.sh
+          export OS_TOKEN="$(cat /root/os_token.txt)"
+
+          cluster_exists="$(openstack coe cluster show vsantaro-func-tests--test 2>&1 || true)"
+          if [[ "$cluster_exists" == *"not be found"* ]]; then
+            openstack coe cluster create \
+                vsantaro-func-tests--test \
+                --cluster-template kubernetes-1.22.9-1 \
+                --node-count 2
+          fi
+
+    - name: wait-cluster-ready
+      script:
+        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+        command: [/bin/bash]
+        source: |
+          #!/bin/bash
+
+          set -ex
+
+          source /root/os_rc_token.sh
+          export OS_TOKEN="$(cat /root/os_token.txt)"
+
+          while true; do
+              status=$(openstack coe cluster show vsantaro-func-tests--test -f json | jq -r '.status')
+              echo $status
+
+              if [ "$status" = "CREATE_IN_PROGRESS" ]; then
+                  printf "Waiting cluster creation.\n"
+                  continue
+              elif [ "$status" = "CREATE_COMPLETE" ]; then
+                  printf "Cluster is ready.\n"
+                  break
+              else
+                  printf "Failed to create cluster.\n"
+                  exit -1
+              fi
+
+              sleep 10
+          done
+
+    - name: exec-test
+      script:
+        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+        command: [/bin/bash]
+        source: |
+          #!/bin/bash
+
+          set -ex
+
+          source /root/os_rc_token.sh
+          export OS_TOKEN="$(cat /root/os_token.txt)"
+
+          mkdir -p /root/func-tests--test/
+          openstack coe cluster config \
+              vsantaro-func-tests--test \
+              --dir /root/func-tests--test/ \
+              --force \
+              || true
+
+          ls  /root/func-tests--test/
+
+          export KUBECONFIG="/root/func-tests--test/config"
+          kubectl config set-context --current --namespace=default
+
+          kubectl delete job check-eos || true
+          kubectl apply -f /root/src/k8s-eos/job.yml
+
+          while true; do
+            sleep 10
+            active=$(kubectl get job check-eos -o json | jq -r '.status | has("active")')
+            succeeded=$(kubectl get job check-eos -o json | jq -r '.status | has("succeeded")')
+
+            if [ "$active" = "true" ]; then
+              printf "Waiting job to finish.\n"
+              continue
+            elif [ "$succeeded" = "true" ]; then
+              printf "Job succeeded.\n"
+              kubectl logs job/check-eos
+              break
+            else
+              printf "Job failed.\n"
+              kubectl logs job/check-eos
+              exit -1
+            fi
+          done
+
+    - name: delete-cluster
+      script:
+        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+        command: [/bin/bash]
+        source: |
+          #!/bin/bash
+
+          set -ex
+
+          source /root/os_rc_token.sh
+          export OS_TOKEN="$(cat /root/os_token.txt)"
+
+          openstack coe cluster delete \
+              vsantaro-func-tests--test

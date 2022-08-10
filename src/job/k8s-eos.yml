@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-eos-script
+data:
+  script.sh: |
+    #!/bin/bash
+
+    sleep 15
+
+    ls_output=$(ls /eos 2>&1)
+    if [ $? -ne 0 ]; then
+      echo "error: $ls_output"
+      exit 1
+    fi
+
+    ls_output=$(ls /eos/user 2>&1)
+    if [ $? -ne 0 ]; then
+      echo "error: $ls_output"
+      exit 1
+    fi
+
+    n=$(ls /eos/user | wc  -l)
+    if [ $n -ne 26 ]; then
+      echo "error: wrong number of subdirectories in /eos/user, expected 26 but found ${n}"
+      exit 1
+    fi
+
+    echo "done"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: check-eos
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: check-eos
+    spec:
+      restartPolicy: Never
+      activeDeadlineSeconds: 120
+      securityContext:
+        seLinuxOptions:
+          type: "spc_t"
+      containers:
+        - name: check-eos
+          image: bash:5.0.17
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/local/bin/bash", "/tmp/script/script.sh"]
+          volumeMounts:
+          - name: config-volume
+            mountPath: /tmp/script
+          - name: eos
+            mountPath: /eos
+            mountPropagation: HostToContainer
+      volumes:
+        - name: config-volume
+          configMap:
+            name: k8s-eos-script
+        - name: eos
+          hostPath:
+            path: /var/eos

@@ -1,5 +1,5 @@
 ################################################################################
-# Image registry.cern.ch/vsantaro/lxplus8-ssh-image
+# Image registry.cern.ch/vsantaro/func-tests
 ################################################################################
 
 FROM ubuntu:latest
