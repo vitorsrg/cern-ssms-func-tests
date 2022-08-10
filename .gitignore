@@ -5,12 +5,8 @@
 /lxplus8_home/
 /check-eos.yml
 /dispatch-check-eos.yml
-/harbor_secret.txt
-/keytab.krb
-/lxplus8_host.txt
-/lxplus8-ssh-image/keytab.krb
-/lxplus8-ssh-image/os_token.txt
 /.conda/
+/secrets/
 
 # IDEs
 .idea/

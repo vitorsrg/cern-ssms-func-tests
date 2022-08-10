@@ -53,6 +53,8 @@ kubectl cluster-info
 kubectl create ns argo
 kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo-workflows/master/manifests/quick-start-postgres.yaml
 
+
+
 sshfs "vsantaro@$lxplus8_host:/afs/cern.ch/user/v/vsantaro/" "./lxplus8_home/"
 umount -f "./lxplus8_home/"
 
