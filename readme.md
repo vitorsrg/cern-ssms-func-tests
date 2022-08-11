@@ -60,3 +60,9 @@ umount -f "./lxplus8_home/"
 
 ```
 
+git clone \
+    "https://oauth2:$(cat ./secrets/gitlab_token.txt)@gitlab.cern.ch/kubernetes/testing/functional.git" \
+    --branch vitorsrg \
+    --single-branch \
+    --depth 1 \
+    ./func-tests2

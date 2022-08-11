@@ -7,7 +7,10 @@ export OS_PROJECT_DOMAIN_ID="default"
 
 export OS_USERNAME="vsantaro"
 
-# export OS_TOKEN=""
+if [ "$#" -gt 1 ]; then
+    export OS_TOKEN="$1"
+fi
+
 export OS_AUTH_TYPE="token"
 export OS_VOLUME_API_VERSION="2"
 export OS_IDENTITY_API_VERSION="3"
