@@ -82,10 +82,9 @@ manage::build_docker () {
 
     docker build \
         -t registry.cern.ch/vsantaro/func-tests \
-        --build-arg lxplus8_host="$(cat ./secrets/lxplus8_host.txt)" \
         --squash \
-        ./docker-image
-    cat ./harbor_secret.txt \
+        ./docker_image
+    cat ./secrets/harbor_token.txt \
         | docker login \
             registry.cern.ch \
             --username vsantaro \

@@ -2,12 +2,10 @@
 # Image registry.cern.ch/vsantaro/func-tests
 ################################################################################
 
-FROM ubuntu:latest
+# FROM ubuntu:latest
+FROM condaforge/miniforge3:4.13.0-1
 
-SHELL [
-    "/bin/bash",
-    "-c",
-]
+SHELL ["/bin/bash", "-c"]
 
 ################################################################################
 # Install SSH deps
@@ -21,13 +19,8 @@ RUN apt-get update -qq -y \
 ################################################################################
 
 RUN apt-get install -qq -y \
-    curl \
     gcc
-RUN curl \
-    -L -O \
-    "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"
-RUN bash Mambaforge-$(uname)-$(uname -m).sh -b
-RUN /root/mambaforge/bin/conda create -y -p /root/.conda 'python==3.10.0'
+RUN conda create -y -p /root/.conda 'python==3.10.0'
 ENV PATH="/root/.conda/bin/:$PATH"
 
 RUN pip install \
@@ -39,6 +32,8 @@ RUN pip install \
 # Install kubectl
 ################################################################################
 
+RUN apt-get install -qq -y \
+    curl
 RUN curl \
     -fsSLo \
     /usr/share/keyrings/kubernetes-archive-keyring.gpg \
@@ -57,15 +52,7 @@ RUN apt-get install -qq -y \
     jq
 
 ################################################################################
-# Copy sources
-################################################################################
-
-COPY /src /root/src
-
-################################################################################
 # Entrypoint
 ################################################################################
 
-CMD [
-    "/sbin/init",
-]
+CMD ["/sbin/init"]
