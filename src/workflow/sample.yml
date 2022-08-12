@@ -139,7 +139,7 @@ spec:
           - name: OS_TOKEN
             value: "{{inputs.parameters.os-token}}"
           - name: test_name
-            value: k8s_eos
+            value: k8s-eos
 
     - name: delete-cluster
       inputs:
