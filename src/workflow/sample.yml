@@ -47,8 +47,12 @@ spec:
               parameters:
                 - name: os-token
                   value: "{{workflow.parameters.os-token}}"
-        # - - name: exec-test
-        #     template: exec-test
+        - - name: exec-test
+            template: exec-test
+            arguments:
+              parameters:
+                - name: os-token
+                  value: "{{workflow.parameters.os-token}}"
         - - name: delete-cluster
             template: delete-cluster
             arguments:
@@ -68,7 +72,7 @@ spec:
         command: [/bin/bash]
         env:
           - name: gitlab_token
-          - value: "{{inputs.parameters.gitlab-token}}"
+            value: "{{inputs.parameters.gitlab-token}}"
         source: |
           #!/bin/bash
 
@@ -95,7 +99,7 @@ spec:
           - /mnt/gitlab-repo/src/script/workflow/create_cluster.sh
         env:
           - name: OS_TOKEN
-          - value: "{{inputs.parameters.os-token}}"
+            value: "{{inputs.parameters.os-token}}"
 
     - name: wait-cluster-ready
       inputs:
@@ -111,53 +115,31 @@ spec:
           - /mnt/gitlab-repo/src/script/workflow/wait_cluster_ready.sh
         env:
           - name: OS_TOKEN
-          - value: "{{inputs.parameters.os-token}}"
+            value: "{{inputs.parameters.os-token}}"
 
     - name: exec-test
-      script:
-        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+      inputs:
+        parameters:
+          - name: os-token
+      outputs:
+        parameters:
+        - name: test_result
+          valueFrom:
+            default: unknown
+            path: /root/test_result.txt
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: gitlab-repo
+            mountPath: /mnt/gitlab-repo
         command: [/bin/bash]
-        source: |
-          #!/bin/bash
-
-          set -ex
-
-          source /root/os_rc_token.sh
-          export OS_TOKEN="$(cat /root/os_token.txt)"
-
-          mkdir -p /root/func-tests--test/
-          openstack coe cluster config \
-              vsantaro-func-tests--test \
-              --dir /root/func-tests--test/ \
-              --force \
-              || true
-
-          ls  /root/func-tests--test/
-
-          export KUBECONFIG="/root/func-tests--test/config"
-          kubectl config set-context --current --namespace=default
-
-          kubectl delete job check-eos || true
-          kubectl apply -f /root/src/k8s-eos/job.yml
-
-          while true; do
-            sleep 10
-            active=$(kubectl get job check-eos -o json | jq -r '.status | has("active")')
-            succeeded=$(kubectl get job check-eos -o json | jq -r '.status | has("succeeded")')
-
-            if [ "$active" = "true" ]; then
-              printf "Waiting job to finish.\n"
-              continue
-            elif [ "$succeeded" = "true" ]; then
-              printf "Job succeeded.\n"
-              kubectl logs job/check-eos
-              break
-            else
-              printf "Job failed.\n"
-              kubectl logs job/check-eos
-              exit -1
-            fi
-          done
+        args:
+          - /mnt/gitlab-repo/src/script/workflow/exec_test.sh
+        env:
+          - name: OS_TOKEN
+            value: "{{inputs.parameters.os-token}}"
+          - name: test_name
+            value: k8s_eos
 
     - name: delete-cluster
       inputs:
@@ -173,4 +155,4 @@ spec:
           - /mnt/gitlab-repo/src/script/workflow/delete_cluster.sh
         env:
           - name: OS_TOKEN
-          - value: "{{inputs.parameters.os-token}}"
+            value: "{{inputs.parameters.os-token}}"

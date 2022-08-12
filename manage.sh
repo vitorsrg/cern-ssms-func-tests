@@ -105,8 +105,8 @@ manage::dispatch_argo () {
     # kubectl get namespace
     ./argo.bin \
         submit -n argo ./src/workflow/sample.yml \
-        -p "os-token=\"$(cat ./secrets/os_token.txt)\"" \
-        -p "gitlab-token=\"$(cat ./secrets/gitlab_token.txt)\""
+        -p "os-token=$(cat ./secrets/os_token.txt)" \
+        -p "gitlab-token=$(cat ./secrets/gitlab_token.txt)"
 }
 
 manage::serve_argo () {
