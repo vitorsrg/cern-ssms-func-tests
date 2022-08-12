@@ -7,7 +7,7 @@ export OS_PROJECT_DOMAIN_ID="default"
 
 export OS_USERNAME="vsantaro"
 
-if [ "$#" -gt 1 ]; then
+if [ "$#" -gt 0 ]; then
     export OS_TOKEN="$1"
 fi
 

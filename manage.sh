@@ -68,6 +68,11 @@ manage::setup_creds () {
         > ./secrets/os_token.txt
 
     open https://registry.cern.ch/
+
+    source \
+        ./src/script/openstack/setup_token.sh \
+        $(cat ./secrets/os_token.txt)
+    export KUBECONFIG="$(pwd)/secrets/kubeconfig.yml"
 }
 
 manage::remount () {
@@ -95,48 +100,21 @@ manage::build_docker () {
 manage::dispatch_argo () {
     set -x
 
-    source_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-    export KUBECONFIG="$source_dir/kubeconfig.yml"
+    export KUBECONFIG="$(pwd)/secrets/kubeconfig.yml"
 
-    kubectl get namespace
-    ./argo-darwin-amd64 \
-        submit -n argo ./sample.yml # --watch
+    # kubectl get namespace
+    ./argo.bin \
+        submit -n argo ./src/workflow/sample.yml \
+        -p "os-token=\"$(cat ./secrets/os_token.txt)\"" \
+        -p "gitlab-token=\"$(cat ./secrets/gitlab_token.txt)\""
 }
 
 manage::serve_argo () {
-    source_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-    export KUBECONFIG="$source_dir/kubeconfig.yml"
+    set -x
+
+    export KUBECONFIG="$(pwd)/secrets/kubeconfig.yml"
 
     kubectl -n argo port-forward deployment/argo-server 2746:2746
-
-    # ssh \
-    # 	"vsantaro@$(cat lxplus8_host.txt)" \
-    # 	<<-'EOS' &
-    # 	set -e
-    # 	export KUBECONFIG=/afs/cern.ch/user/v/vsantaro/config
-    # 	export OS_PROJECT_NAME="IT Cloud Infrastructure Developers"
-    # 	set -v
-    # 	kubectl -n argo port-forward deployment/argo-server 2746:2746
-    # EOS
-    # argo_server_pid=$!
-
-    # ssh \
-    # 	-NT \
-    # 	-L '2746:[::1]:2746' \
-    # 	"vsantaro@$(cat lxplus8_host.txt)" \
-    # 	&
-    # ssh_port_forward_pid=$!
-
-    # set -x
-
-    # trap \
-    # 	"kill $argo_server_pid || kill $ssh_port_forward_pid || true; wait" \
-    # 	SIGINT SIGTERM
-
-    # sleep inf || true
-    # jobs -p
-    # wait
-
 }
 
 manage::dispatch_job () {

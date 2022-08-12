@@ -1,74 +1,117 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
+
 metadata:
-  generateName: dispatch-sample
+  generateName: dispatch-sample-
   labels:
     workflows.argoproj.io/archive-strategy: "false"
   annotations:
     workflows.argoproj.io/description: ""
+
 spec:
   entrypoint: main
+
+  arguments:
+    parameters:
+      - name: os-token
+      - name: gitlab-token
+
+  volumeClaimTemplates:
+    - metadata:
+        name: gitlab-repo
+      spec:
+        accessModes: [ReadWriteMany]
+        storageClassName: geneva-cephfs-testing
+        resources:
+          requests:
+            storage: 1Gi
+
   templates:
     - name: main
       steps:
+        - - name: clone-repo
+            template: clone-repo
+            arguments:
+              parameters:
+                - name: gitlab-token
+                  value: "{{workflow.parameters.gitlab-token}}"
         - - name: create-cluster
             template: create-cluster
+            arguments:
+              parameters:
+                - name: os-token
+                  value: "{{workflow.parameters.os-token}}"
         - - name: wait-cluster-ready
             template: wait-cluster-ready
-        - - name: exec-test
-            template: exec-test
+            arguments:
+              parameters:
+                - name: os-token
+                  value: "{{workflow.parameters.os-token}}"
+        # - - name: exec-test
+        #     template: exec-test
         - - name: delete-cluster
             template: delete-cluster
+            arguments:
+              parameters:
+                - name: os-token
+                  value: "{{workflow.parameters.os-token}}"
+
+    - name: clone-repo
+      inputs:
+        parameters:
+          - name: gitlab-token
+      script:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: gitlab-repo
+            mountPath: /mnt/gitlab-repo
+        command: [/bin/bash]
+        env:
+          - name: gitlab_token
+          - value: "{{inputs.parameters.gitlab-token}}"
+        source: |
+          #!/bin/bash
+
+          set -ex
+
+          git clone \
+            "https://oauth2:${gitlab_token}@gitlab.cern.ch/kubernetes/testing/functional.git" \
+            --branch vitorsrg \
+            --single-branch \
+            --depth 1 \
+            /mnt/gitlab-repo
 
     - name: create-cluster
-      script:
-        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+      inputs:
+        parameters:
+          - name: os-token
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: gitlab-repo
+            mountPath: /mnt/gitlab-repo
         command: [/bin/bash]
-        source: |
-          #!/bin/bash
-
-          set -ex
-
-          source /root/os_rc_token.sh
-          export OS_TOKEN="$(cat /root/os_token.txt)"
-
-          cluster_exists="$(openstack coe cluster show vsantaro-func-tests--test 2>&1 || true)"
-          if [[ "$cluster_exists" == *"not be found"* ]]; then
-            openstack coe cluster create \
-                vsantaro-func-tests--test \
-                --cluster-template kubernetes-1.22.9-1 \
-                --node-count 2
-          fi
+        args:
+          - /mnt/gitlab-repo/src/script/workflow/create_cluster.sh
+        env:
+          - name: OS_TOKEN
+          - value: "{{inputs.parameters.os-token}}"
 
     - name: wait-cluster-ready
-      script:
-        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+      inputs:
+        parameters:
+          - name: os-token
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: gitlab-repo
+            mountPath: /mnt/gitlab-repo
         command: [/bin/bash]
-        source: |
-          #!/bin/bash
-
-          set -ex
-
-          source /root/os_rc_token.sh
-          export OS_TOKEN="$(cat /root/os_token.txt)"
-
-          while true; do
-              status=$(openstack coe cluster show vsantaro-func-tests--test -f json | jq -r '.status')
-              echo $status
-
-              if [ "$status" = "CREATE_IN_PROGRESS" ]; then
-                  printf "Waiting cluster creation.\n"
-                  continue
-              elif [ "$status" = "CREATE_COMPLETE" ]; then
-                  printf "Cluster is ready.\n"
-                  break
-              else
-                  printf "Failed to create cluster.\n"
-                  exit -1
-              fi
-
-              sleep 10
-          done
+        args:
+          - /mnt/gitlab-repo/src/script/workflow/wait_cluster_ready.sh
+        env:
+          - name: OS_TOKEN
+          - value: "{{inputs.parameters.os-token}}"
 
     - name: exec-test
       script:
@@ -117,16 +160,17 @@ spec:
           done
 
     - name: delete-cluster
-      script:
-        image: registry.cern.ch/vsantaro/lxplus8-ssh-image
+      inputs:
+        parameters:
+          - name: os-token
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: gitlab-repo
+            mountPath: /mnt/gitlab-repo
         command: [/bin/bash]
-        source: |
-          #!/bin/bash
-
-          set -ex
-
-          source /root/os_rc_token.sh
-          export OS_TOKEN="$(cat /root/os_token.txt)"
-
-          openstack coe cluster delete \
-              vsantaro-func-tests--test
+        args:
+          - /mnt/gitlab-repo/src/script/workflow/delete_cluster.sh
+        env:
+          - name: OS_TOKEN
+          - value: "{{inputs.parameters.os-token}}"
