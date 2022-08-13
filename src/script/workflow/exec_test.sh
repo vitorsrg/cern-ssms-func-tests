@@ -36,7 +36,7 @@ elif [ "$succeeded" = "true" ]; then
 else
     printf "Job failed.\n"
     kubectl logs "job/${test_name}"
-    printf "success" > /root/failure.txt
+    printf "failure" > /root/failure.txt
     exit -1
 fi
 done

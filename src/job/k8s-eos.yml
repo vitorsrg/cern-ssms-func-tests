@@ -25,6 +25,8 @@ data:
       echo "error: wrong number of subdirectories in /eos/user, expected 26 but found ${n}"
       exit 1
     fi
+
+    echo "done"
 ---
 apiVersion: batch/v1
 kind: Job
@@ -53,7 +55,7 @@ spec:
           image: bash:5.0.17
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
+            - /usr/local/bin/bash
             - /tmp/script/script.sh
           volumeMounts:
             - name: k8s-eos-script
