@@ -62,7 +62,7 @@ manage::setup_creds () {
     klist -Af
 
     ssh \
-        "vsantaro@$(cat lxplus8_host.txt)" \
+        "vsantaro@$(cat ./secrets/lxplus8_host.txt)" \
         'export OS_PROJECT_NAME="IT Cloud Infrastructure Developers"; openstack token issue -f json' \
         | jq -r '.id' \
         > ./secrets/os_token.txt
@@ -106,7 +106,8 @@ manage::dispatch_argo () {
     ./argo.bin \
         submit -n argo ./src/workflow/sample.yml \
         -p "os-token=$(cat ./secrets/os_token.txt)" \
-        -p "gitlab-token=$(cat ./secrets/gitlab_token.txt)"
+        -p "gitlab-token=$(cat ./secrets/gitlab_token.txt)" \
+        -p "test-name=k8s-eos"
 }
 
 manage::serve_argo () {

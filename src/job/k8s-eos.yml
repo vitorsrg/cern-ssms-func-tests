@@ -23,6 +23,7 @@ spec:
           volumeMounts:
             - name: gitlab-repo
               mountPath: /mnt/gitlab-repo
+              mountPropagation: HostToContainer
             - name: eos
               mountPath: /eos
               mountPropagation: HostToContainer
