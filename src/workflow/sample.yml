@@ -15,6 +15,7 @@ spec:
     parameters:
       - name: os-token
       - name: gitlab-token
+      - name: test-name
 
   volumeClaimTemplates:
     - metadata:
@@ -53,6 +54,8 @@ spec:
               parameters:
                 - name: os-token
                   value: "{{workflow.parameters.os-token}}"
+                - name: test-name
+                  value: "{{workflow.parameters.test-name}}"
         - - name: delete-cluster
             template: delete-cluster
             arguments:
@@ -121,6 +124,7 @@ spec:
       inputs:
         parameters:
           - name: os-token
+          - name: test-name
       outputs:
         parameters:
         - name: test_result
@@ -139,7 +143,7 @@ spec:
           - name: OS_TOKEN
             value: "{{inputs.parameters.os-token}}"
           - name: test_name
-            value: k8s-eos
+            value: "{{inputs.parameters.test-name}}"
 
     - name: delete-cluster
       inputs:
