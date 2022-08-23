@@ -1,5 +1,12 @@
 
 
+## Decision record
+
+### Bash library structure and documentation
+
+1. Docopt command-line interface [website](http://docopt.org/).
+1. Google bash style guide [website](https://google.github.io/styleguide/shellguide.html).
+
 1. Setup python env
 
     ```sh
