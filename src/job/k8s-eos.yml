@@ -6,7 +6,7 @@ data:
   script.sh: |
     #!/bin/bash
 
-    sleep 15
+    # sleep 15
 
     ls_output=$(ls /eos 2>&1)
     if [ $? -ne 0 ]; then
