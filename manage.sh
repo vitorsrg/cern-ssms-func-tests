@@ -17,9 +17,6 @@ manage::main () {
     "build_docker" )
         manage::build_docker
     ;;
-    "dispatch_argo" )
-        manage::dispatch_argo
-    ;;
     "serve_argo" )
         manage::serve_argo
     ;;
@@ -52,19 +49,6 @@ manage::build_docker () {
     docker push registry.cern.ch/vsantaro/func-tests
 }
 
-manage::dispatch_argo () {
-    set -x
-
-    export KUBECONFIG="$(pwd)/secrets/kubeconfig.yml"
-
-    # kubectl get namespace
-    ./argo.bin \
-        submit -n argo ./src/workflow/sample.yml \
-        -p "openstack_token=$(cat ./secrets/os_token.txt)" \
-        -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
-        -p "test_name=k8s-eos"
-}
-
 manage::serve_argo () {
     set -x
 
@@ -87,8 +71,8 @@ manage::dispatch_job () {
 
     while true; do
         sleep 10
-        active=$(kubectl get job check-eos -o json | jq -r '.status | has("active")')
-        succeeded=$(kubectl get job check-eos -o json | jq -r '.status | has("succeeded")')
+        active=$(kubectl get job check-eos -o json | jq -jr '.status | has("active")')
+        succeeded=$(kubectl get job check-eos -o json | jq -jr '.status | has("succeeded")')
 
         if [ "$active" = "true" ]; then
             printf "Waiting job to finish.\n"
@@ -106,7 +90,7 @@ manage::dispatch_job () {
     kubectl describe job/check-eos
     # kubectl explain jobs.status
     kubectl get job check-eos -o json | jq '.status'
-    kubectl get job check-eos -o json | jq -r '.status.succeeded'
+    kubectl get job check-eos -o json | jq -jr '.status.succeeded'
 
 }
 

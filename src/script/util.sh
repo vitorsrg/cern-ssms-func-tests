@@ -21,27 +21,26 @@ function util::lowercase () {
 }
 
 
-# function util::parse_bool () {
-#     case util::lowercase "${1:-false}" in
-#         1|y|yes|true)
-#             printf "true"
-#         ;;
-#         0|n|no|false)
-#             printf "false"
-#         ;;
-#         *)
-#             return -1
-#         ;;
-#     esac
-# }
+function util::parse_bool () {
+    case $(util::lowercase "${1:-false}") in
+        1|y|yes|true)
+            printf "true"
+        ;;
+        0|n|no|false)
+            printf "false"
+        ;;
+        *)
+            return -1
+        ;;
+    esac
+}
 
 function util::dedent () {
     python -c \
-        "
-        import sys, textwrap; \
+        "import sys, textwrap; \
         sys.stdout.write(textwrap.dedent(sys.stdin.read()))
         " \
-        <<< $1
+        <<< "$1"
 }
 
 

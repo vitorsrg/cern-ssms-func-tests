@@ -6,7 +6,7 @@ pwd
 source /mnt/gitlab-repo/src/script/openstack/setup_token.sh
 
 while true; do
-    status=$(openstack coe cluster show vsantaro-func-tests--test -f json | jq -r '.status')
+    status=$(openstack coe cluster show vsantaro-func-tests--test -f json | jq -jr '.status')
     echo $status
 
     if [ "$status" = "CREATE_IN_PROGRESS" ]; then

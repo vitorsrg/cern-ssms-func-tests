@@ -22,8 +22,8 @@ kubectl apply -f "/mnt/gitlab-repo/src/job/${test_name}.yml"
 
 while true; do
 sleep 10
-active=$(kubectl get job ${test_name} -o json | jq -r '.status | has("active")')
-succeeded=$(kubectl get job ${test_name} -o json | jq -r '.status | has("succeeded")')
+active=$(kubectl get job ${test_name} -o json | jq -jr '.status | has("active")')
+succeeded=$(kubectl get job ${test_name} -o json | jq -jr '.status | has("succeeded")')
 
 if [ "$active" = "true" ]; then
     printf "Waiting job to finish.\n"
