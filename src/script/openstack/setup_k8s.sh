@@ -18,10 +18,11 @@ cluster_name="$1"
 kubeconfig_path="$2"
 tmpdir=$(mktemp -d)
 
-openstack -v coe cluster config \
+openstack coe cluster config \
     "$cluster_name" \
     --dir "$tmpdir" \
-    --force
+    --force \
+    || true  # TODO: revisit this
 mv \
     "$tmpdir/config" \
     "$2"

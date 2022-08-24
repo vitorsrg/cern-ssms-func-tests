@@ -21,17 +21,30 @@ cd "$source_path"
 source "./src/script/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
-source "./src/script/openstack/setup_k8s.sh" \
+bash "./src/script/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
+    # "vsantaro-func-tests" \
+export KUBECONFIG="/root/kubeconfig.yml"
+
+
+kubectl config set-context \
+    --current \
+    --namespace=default
 
 kubectl apply \
-    -f "./src/workflow/source_volume.yml" 
-
+    -f "./src/workflow/storage_class.yml"
+kubectl apply \
+    -f "./src/workflow/source_volume.yml"
 kubectl wait \
     --for=condition=ready \
+    --timeout=60s \
     pod "func-tests-port"
 
+kubectl exec \
+     "func-tests-port" \
+     -- \
+     sh -c 'rm -rf /tmp/test'
 kubectl cp \
     "$source_path" \
      "func-tests-port:/mnt/func-tests"

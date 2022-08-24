@@ -9,6 +9,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
+  storageClassName: manila-delete
   resources:
     requests:
       storage: 1Gi

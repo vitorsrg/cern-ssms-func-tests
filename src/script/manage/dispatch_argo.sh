@@ -15,11 +15,15 @@
 #u      setup_creds
 ################################################################################
 
-set -e
+set -ex
+
+git commit -S -a -m 'fixup' || true
+git push gitlab HEAD:vitorsrg
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 
-kubectl apply -f "./src/workflow/storage_class.yml"
+kubectl apply \
+    -f "./src/workflow/storage_class.yml"
 
 ./argo.bin \
     submit -n argo ./src/workflow/sample.yml \
