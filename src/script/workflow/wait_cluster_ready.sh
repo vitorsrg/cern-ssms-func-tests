@@ -1,24 +1,48 @@
 #!/bin/bash
 
+################################################################################
+#i  Maybe delete the test cluster.
+#ii
+#ii
+#ii Example:
+#ii     bash "./src/script/manage/cern_login.sh"
+#ii
+#ii Inputs:
+#ii     env     openstack_token
+#ii     env     source_path
+#ii     env     cluster_name
+#ii     env     has_created_cluster
+#ii     env     should_delete_existing_cluster
+#ii     # TODO: env may_delete_cluster
+#ii
+#ii Outputs:
+#ii     file    /root/output/has_deleted_cluster.txt
+################################################################################
+
 set -ex
 pwd
 
-source /mnt/gitlab-repo/src/script/openstack/setup_token.sh
+cd "$source_path"
 
-while true; do
-    status=$(openstack coe cluster show vsantaro-func-tests--test -f json | jq -jr '.status')
-    echo $status
+source "./src/script/util.sh"
+source "./src/script/openstack/setup_token.sh" \
+    "$openstack_token"
 
-    if [ "$status" = "CREATE_IN_PROGRESS" ]; then
-        printf "Waiting cluster creation.\n"
-        continue
-    elif [ "$status" = "CREATE_COMPLETE" ]; then
-        printf "Cluster is ready.\n"
-        break
-    else
-        printf "Failed to create cluster.\n"
-        exit -1
-    fi
+mkdir -p "/root/output/"
 
-    sleep 10
-done
+if \
+    util::eval_bool "$has_created_cluster" \
+    || util::eval_bool "$should_delete_existing_cluster"
+then
+    openstack coe cluster delete \
+        "$cluster_name"
+
+    printf \
+        "true" \
+        > "/root/output/has_deleted_cluster.txt"
+else
+    printf \
+        "false" \
+        > "/root/output/has_deleted_cluster.txt"
+fi
+

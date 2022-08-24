@@ -35,6 +35,23 @@ function util::parse_bool () {
     esac
 }
 
+
+function util::eval_bool () {
+    case $(util::lowercase "${1:-false}") in
+        1|y|yes|true)
+            return 0
+        ;;
+        0|n|no|false)
+            return 1
+        ;;
+        *)
+            util::log "Failed to eval bool."
+            return -1
+        ;;
+    esac
+}
+
+
 function util::dedent () {
     python -c \
         "import sys, textwrap; \

@@ -21,7 +21,8 @@ tmpdir=$(mktemp -d)
 openstack coe cluster config \
     "$cluster_name" \
     --dir "$tmpdir" \
-    --force
+    --force \
+    > /dev/null
 mv \
     "$tmpdir/config" \
     "$2"

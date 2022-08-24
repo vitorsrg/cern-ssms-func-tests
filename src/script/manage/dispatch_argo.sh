@@ -5,6 +5,8 @@
 #ii
 #ii Example:
 #ii     bash "./src/script/manage/dispatch_argo.sh"
+#ii     bash "./src/script/manage/dispatch_argo.sh" --watch
+#ii     bash "./src/script/manage/dispatch_argo.sh" --log
 #ii
 #ii Inputs:
 #ii     file    "./secrets/kubeconfig.yml"
@@ -21,4 +23,5 @@ export KUBECONFIG="./secrets/kubeconfig.yml"
     submit -n argo ./src/workflow/sample.yml \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
-    -p "test_name=k8s-eos"
+    -p "test_name=k8s-eos" \
+    "$@"

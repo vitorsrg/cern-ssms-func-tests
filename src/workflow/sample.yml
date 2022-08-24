@@ -8,7 +8,7 @@ kind: Workflow
 ################################################################################
 
 metadata:
-  generateName: dispatch-sample-
+  generateName: func-tests-
   labels:
     workflows.argoproj.io/archive-strategy: "false"
   annotations:
@@ -50,6 +50,8 @@ spec:
       - name: may_fail_if_exists
         value: "false"
       - name: test_name
+      - name: should_delete_existing_cluster
+        value: "true"
 
   ##############################################################################
 
@@ -81,8 +83,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
-        - - name: maybe-create-cluster
-            template: maybe-create-cluster
+        - - name: create-cluster
+            template: create-cluster
             arguments:
               parameters:
                 - name: openstack_token
@@ -123,8 +125,14 @@ spec:
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
-            when: |
-              {{steps['maybe-create-cluster'].outputs.created_cluster}} == true
+                - name: cluster_name
+                  value: "{{workflow.parameters.cluster_name}}"
+                - name: has_created_cluster
+                  value: "{{steps['create-cluster'].outputs.has_created_cluster}}}"
+                - name: should_delete_existing_cluster
+                  value: "{{workflow.parameters.should_delete_existing_cluster}}"
+            # when: |
+            #   {{steps['create-cluster'].outputs.has_created_cluster}} == true
 
     ############################################################################
 
@@ -161,7 +169,7 @@ spec:
 
     ############################################################################
 
-    - name: maybe-create-cluster
+    - name: create-cluster
       inputs:
         parameters:
           - name: openstack_token
@@ -177,9 +185,9 @@ spec:
           - name: cluster_uuid
             valueFrom:
               path: /root/output/cluster_uuid.txt
-          - name: created_cluster
+          - name: has_created_cluster
             valueFrom:
-              path: /root/output/created_cluster.txt
+              path: /root/output/has_created_cluster.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
@@ -187,7 +195,7 @@ spec:
             mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
-          - "{{inputs.parameters.source_path}}/src/script/workflow/maybe_create_cluster.sh"
+          - "{{inputs.parameters.source_path}}/src/script/workflow/create_cluster.sh"
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
@@ -258,6 +266,14 @@ spec:
         parameters:
           - name: openstack_token
           - name: source_path
+          - name: cluster_name
+          - name: has_created_cluster
+          - name: should_delete_existing_cluster
+      outputs:
+        parameters:
+          - name: has_deleted_cluster
+            valueFrom:
+              path: /root/output/has_deleted_cluster.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
@@ -265,9 +281,15 @@ spec:
             mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
-          - /mnt/gitlab-repo/src/script/workflow/delete_cluster.sh
+          - "{{inputs.parameters.source_path}}/src/script/workflow/delete_cluster.sh"
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
+          - name: cluster_name
+            value: "{{inputs.parameters.cluster_name}}"
+          - name: has_created_cluster
+            value: "{{inputs.parameters.has_created_cluster}}"
+          - name: should_delete_existing_cluster
+            value: "{{inputs.parameters.should_delete_existing_cluster}}"

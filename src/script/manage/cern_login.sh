@@ -24,19 +24,19 @@ source "./src/script/util.sh"
 # CERN kerberos login
 ################################################################################
 
-# kdestroy -A
-# rm -rf "./secrets/cern_keytab.krb"
+kdestroy -A
+rm -rf "./secrets/cern_keytab.krb"
 
-# read -s -p "Password: " cern_password
-# printf "\n"
-# ktutil \
-#     -k "./secrets/cern_keytab.krb" \
-#     add \
-#         -p "vsantaro@CERN.CH" \
-#         -e arcfour-hmac-md5 \
-#         --password=$cern_password \
-#         -V 3 \
-#         --no-salt
+read -s -p "Password: " cern_password
+printf "\n"
+ktutil \
+    -k "./secrets/cern_keytab.krb" \
+    add \
+        -p "vsantaro@CERN.CH" \
+        -e arcfour-hmac-md5 \
+        --password=$cern_password \
+        -V 3 \
+        --no-salt
 
 kinit \
     --afslog -f -kt \
