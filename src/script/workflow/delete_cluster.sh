@@ -5,15 +5,15 @@
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/cern_login.sh"
+#ii     bash "./src/script/workflow/delete_cluster.sh"
 #ii
 #ii Inputs:
 #ii     env     openstack_token
 #ii     env     source_path
 #ii     env     cluster_name
+#ii     env     may_delete_cluster
 #ii     env     has_created_cluster
 #ii     env     should_delete_existing_cluster
-#ii     # TODO: env may_delete_cluster
 #ii
 #ii Outputs:
 #ii     file    /root/output/has_deleted_cluster.txt
@@ -31,8 +31,11 @@ source "./src/script/openstack/setup_token.sh" \
 mkdir -p "/root/output/"
 
 if \
-    util::eval_bool "$has_created_cluster" \
-    || util::eval_bool "$should_delete_existing_cluster"
+    util::eval_bool "$may_delete_cluster" \
+    && (
+        util::eval_bool "$has_created_cluster" \
+        || util::eval_bool "$should_delete_existing_cluster"
+    )
 then
     openstack coe cluster delete \
         "$cluster_name"

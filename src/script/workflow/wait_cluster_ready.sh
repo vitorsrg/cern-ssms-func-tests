@@ -1,22 +1,17 @@
 #!/bin/bash
 
 ################################################################################
-#i  Maybe delete the test cluster.
+#i  Wait until 
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/cern_login.sh"
+#ii     bash "./src/script/workflow/wait_cluster_ready.sh"
 #ii
 #ii Inputs:
 #ii     env     openstack_token
 #ii     env     source_path
 #ii     env     cluster_name
-#ii     env     has_created_cluster
-#ii     env     should_delete_existing_cluster
-#ii     # TODO: env may_delete_cluster
-#ii
-#ii Outputs:
-#ii     file    /root/output/has_deleted_cluster.txt
+#ii     # TODO: env should_wait_cluster_ready
 ################################################################################
 
 set -ex
@@ -28,21 +23,24 @@ source "./src/script/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
 
-mkdir -p "/root/output/"
+while true; do
+    status=$(
+        openstack coe cluster show \
+            "$cluster_name" \
+            -f json \
+            | jq -jr '.status'
+    )
 
-if \
-    util::eval_bool "$has_created_cluster" \
-    || util::eval_bool "$should_delete_existing_cluster"
-then
-    openstack coe cluster delete \
-        "$cluster_name"
+    if [ "$status" = "CREATE_IN_PROGRESS" ]; then
+        util::log "Waiting cluster creation."
+        continue
+    elif [ "$status" = "CREATE_COMPLETE" ]; then
+        util::log "Cluster is ready."
+        break
+    else
+        util::log "Failed to create cluster."
+        exit -1
+    fi
 
-    printf \
-        "true" \
-        > "/root/output/has_deleted_cluster.txt"
-else
-    printf \
-        "false" \
-        > "/root/output/has_deleted_cluster.txt"
-fi
-
+    sleep 10
+done

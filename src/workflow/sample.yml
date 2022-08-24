@@ -41,15 +41,20 @@ spec:
       - name: cluster_template
         value: "kubernetes-1.22.9-1"
       - name: cluster_node_count
-        value: "4"
+        value: "1"
       - name: cluster_labels
-        value: "KEY1=VALUE1,KEY2=VALUE2;KEY3=VALUE3"
+        value: |
+          KEY1=VALUE1,
+          KEY2=VALUE2;
+          KEY3=VALUE3
       ##########################################################################
       - name: may_create_cluster
         value: "true"
       - name: may_fail_if_exists
         value: "false"
       - name: test_name
+      - name: may_delete_cluster
+        value: "false"
       - name: should_delete_existing_cluster
         value: "true"
 
@@ -103,12 +108,16 @@ spec:
                   value: "{{workflow.parameters.may_create_cluster}}"
                 - name: may_fail_if_exists
                   value: "{{workflow.parameters.may_fail_if_exists}}"
-        # - - name: wait-cluster-ready
-        #     template: wait-cluster-ready
-        #     arguments:
-        #       parameters:
-        #         - name: os_token
-        #           value: "{{workflow.parameters.os_token}}"
+        - - name: wait-cluster-ready
+            template: wait-cluster-ready
+            arguments:
+              parameters:
+                - name: openstack_token
+                  value: "{{workflow.parameters.openstack_token}}"
+                - name: source_path
+                  value: "{{workflow.parameters.source_path}}"
+                - name: cluster_name
+                  value: "{{workflow.parameters.cluster_name}}"
         # - - name: exec-test
         #     template: exec-test
         #     arguments:
@@ -127,6 +136,8 @@ spec:
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
+                - name: may_delete_cluster
+                  value: "{{workflow.parameters.may_delete_cluster}}"
                 - name: has_created_cluster
                   value: "{{steps['create-cluster'].outputs.has_created_cluster}}}"
                 - name: should_delete_existing_cluster
@@ -147,6 +158,7 @@ spec:
         volumeMounts:
           - name: func-tests
             mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: false
         command: [/bin/bash]
         env:
           - name: gitlab_token
@@ -193,6 +205,7 @@ spec:
         volumeMounts:
           - name: func-tests
             mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/create_cluster.sh"
@@ -216,21 +229,28 @@ spec:
 
     ############################################################################
 
-    # - name: wait-cluster-ready
-    #   inputs:
-    #     parameters:
-    #       - name: os_token
-    #   container:
-    #     image: registry.cern.ch/vsantaro/func-tests
-    #     volumeMounts:
-    #       - name: gitlab-repo
-    #         mountPath: /mnt/gitlab-repo
-    #     command: [/bin/bash]
-    #     args:
-    #       - /mnt/gitlab-repo/src/script/workflow/wait_cluster_ready.sh
-    #     env:
-    #       - name: OS_TOKEN
-    #         value: "{{inputs.parameters.os_token}}"
+    - name: wait-cluster-ready
+      inputs:
+        parameters:
+          - name: openstack_token
+          - name: source_path
+          - name: cluster_name
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: func-tests
+            mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
+        command: [/bin/bash]
+        args:
+          - "{{inputs.parameters.source_path}}/src/script/workflow/wait_cluster_ready.sh"
+        env:
+          - name: openstack_token
+            value: "{{inputs.parameters.openstack_token}}"
+          - name: source_path
+            value: "{{inputs.parameters.source_path}}"
+          - name: cluster_name
+            value: "{{inputs.parameters.cluster_name}}"
 
     ############################################################################
 
@@ -267,6 +287,7 @@ spec:
           - name: openstack_token
           - name: source_path
           - name: cluster_name
+          - name: may_delete_cluster
           - name: has_created_cluster
           - name: should_delete_existing_cluster
       outputs:
@@ -279,6 +300,7 @@ spec:
         volumeMounts:
           - name: func-tests
             mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/delete_cluster.sh"
@@ -289,6 +311,8 @@ spec:
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
             value: "{{inputs.parameters.cluster_name}}"
+          - name: may_delete_cluster
+            value: "{{inputs.parameters.may_delete_cluster}}"
           - name: has_created_cluster
             value: "{{inputs.parameters.has_created_cluster}}"
           - name: should_delete_existing_cluster

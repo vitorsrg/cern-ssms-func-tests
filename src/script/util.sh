@@ -12,7 +12,7 @@ fi
 
 
 function util::log () {
-    printf "$(date +'%Y-%m-%dT%H:%M:%S%z')\t$*" >&2
+    printf "$(date +'%Y-%m-%dT%H:%M:%S%z')\t$*\n" >&2
 }
 
 
