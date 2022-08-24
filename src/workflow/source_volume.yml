@@ -1,0 +1,38 @@
+################################################################################
+#
+################################################################################
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: func-tests
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+################################################################################
+#
+################################################################################
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: func-tests-port
+spec:
+  containers:
+    - name: alpine
+      image: alpine:latest
+      command:
+        - "sleep"
+        - "infinity"
+      volumeMounts:
+        - name: func-tests
+          mountPath: /mnt/func-tests
+  volumes:
+    - name: func-tests
+      persistentVolumeClaim:
+        claimName: func-tests

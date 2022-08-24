@@ -18,12 +18,11 @@ cluster_name="$1"
 kubeconfig_path="$2"
 tmpdir=$(mktemp -d)
 
-openstack coe cluster config \
+openstack -v coe cluster config \
     "$cluster_name" \
     --dir "$tmpdir" \
-    --force \
-    > /dev/null
+    --force
 mv \
     "$tmpdir/config" \
     "$2"
-export KUBECONFIG="./secrets/kubeconfig.yml"
+export KUBECONFIG="$2"
