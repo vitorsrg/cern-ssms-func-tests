@@ -19,6 +19,8 @@ set -e
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 
+kubectl apply -f "./src/workflow/storage_class.yml"
+
 ./argo.bin \
     submit -n argo ./src/workflow/sample.yml \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \

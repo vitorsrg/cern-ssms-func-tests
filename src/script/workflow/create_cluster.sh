@@ -13,7 +13,7 @@
 #ii     env     cluster_name
 #ii     env     cluster_template
 #ii     env     cluster_node_count
-#ii     env     cluster_labels
+#ii     env     cluster_labels_json
 #ii     env     may_create_cluster
 #ii     env     may_fail_if_exists
 #ii
@@ -33,21 +33,36 @@ source "./src/script/openstack/setup_token.sh" \
 
 mkdir -p "/root/output/"
 
-cluster_exists=!$(
-    openstack coe cluster show \
-        "$cluster_name" \
-        2>&1 > /dev/null \
-    || printf "$?"
-)
+cluster_exists=$((
+    ! $(
+    util::status \
+        openstack coe cluster show \
+            "vsantaro-func-tests--test"
+    )
+))
 
 if ! util::eval_bool "$cluster_exists"; then
 
     if util::eval_bool "$may_create_cluster"; then
+        declare -a cluster_labels_args=(
+            $(
+                echo "$cluster_labels_json" \
+                | jq -c '
+                    .
+                    | to_entries
+                    | map(["--labels", .key + "=" + .value])
+                    | flatten
+                    | .[]' \
+                | perl -pe 's/^"(.*?)"$/\1/g'
+            )
+        )
+
         openstack coe cluster create \
             "$cluster_name" \
             --cluster-template "$cluster_template" \
             --node-count "$cluster_node_count" \
-            --labels "$cluster_labels"
+            "${cluster_labels_args[@]}" \
+            --merge-labels
 
         printf \
             "true" \

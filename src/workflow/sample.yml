@@ -17,7 +17,6 @@ metadata:
 ################################################################################
 
 spec:
-
   ##############################################################################
 
   entrypoint: main
@@ -42,11 +41,12 @@ spec:
         value: "kubernetes-1.22.9-1"
       - name: cluster_node_count
         value: "1"
-      - name: cluster_labels
+      - name: cluster_labels_json
         value: |
-          KEY1=VALUE1,
-          KEY2=VALUE2;
-          KEY3=VALUE3
+          {
+            "key1": "val1",
+            "key2": "x=1,\ny=2"
+          }
       ##########################################################################
       - name: may_create_cluster
         value: "true"
@@ -60,12 +60,21 @@ spec:
 
   ##############################################################################
 
+  TTLStrategy:
+    secondsAfterCompletion: 86400  # 1 day
+
+  volumeClaimGC:
+    strategy: OnWorkflowCompletion
+
   volumeClaimTemplates:
     - metadata:
         name: func-tests
       spec:
-        accessModes: [ReadWriteMany]
-        storageClassName: geneva-cephfs-testing
+        accessModes:
+          - ReadWriteMany
+          - ReadWriteOnce
+        storageClassName: manila-delete
+        # storageClassName: manila-geneva-cephfs-testing
         resources:
           requests:
             storage: 1Gi
@@ -73,7 +82,6 @@ spec:
   ##############################################################################
 
   templates:
-
     ############################################################################
 
     - name: main
@@ -102,8 +110,8 @@ spec:
                   value: "{{workflow.parameters.cluster_template}}"
                 - name: cluster_node_count
                   value: "{{workflow.parameters.cluster_node_count}}"
-                - name: cluster_labels
-                  value: "{{workflow.parameters.cluster_labels}}"
+                - name: cluster_labels_json
+                  value: "{{workflow.parameters.cluster_labels_json}}"
                 - name: may_create_cluster
                   value: "{{workflow.parameters.may_create_cluster}}"
                 - name: may_fail_if_exists
@@ -142,8 +150,8 @@ spec:
                   value: "{{steps['create-cluster'].outputs.has_created_cluster}}}"
                 - name: should_delete_existing_cluster
                   value: "{{workflow.parameters.should_delete_existing_cluster}}"
-            # when: |
-            #   {{steps['create-cluster'].outputs.has_created_cluster}} == true
+        # when: |
+        #   {{steps['create-cluster'].outputs.has_created_cluster}} == true
 
     ############################################################################
 
@@ -189,7 +197,7 @@ spec:
           - name: cluster_name
           - name: cluster_template
           - name: cluster_node_count
-          - name: cluster_labels
+          - name: cluster_labels_json
           - name: may_create_cluster
           - name: may_fail_if_exists
       outputs:
@@ -220,8 +228,8 @@ spec:
             value: "{{inputs.parameters.cluster_template}}"
           - name: cluster_node_count
             value: "{{inputs.parameters.cluster_node_count}}"
-          - name: cluster_labels
-            value: "{{inputs.parameters.cluster_labels}}"
+          - name: cluster_labels_json
+            value: "{{inputs.parameters.cluster_labels_json}}"
           - name: may_create_cluster
             value: "{{inputs.parameters.may_create_cluster}}"
           - name: may_fail_if_exists

@@ -1,0 +1,22 @@
+################################################################################
+#
+################################################################################
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: manila-delete
+provisioner: cephfs.manila.csi.openstack.org
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+parameters:
+  type: "Geneva CephFS Testing"
+
+  csi.storage.k8s.io/provisioner-secret-name: os-trustee
+  csi.storage.k8s.io/provisioner-secret-namespace: kube-system
+  csi.storage.k8s.io/controller-expand-secret-name: os-trustee
+  csi.storage.k8s.io/controller-expand-secret-namespace: kube-system
+  csi.storage.k8s.io/node-stage-secret-name: os-trustee
+  csi.storage.k8s.io/node-stage-secret-namespace: kube-system
+  csi.storage.k8s.io/node-publish-secret-name: os-trustee
+  csi.storage.k8s.io/node-publish-secret-namespace: kube-system

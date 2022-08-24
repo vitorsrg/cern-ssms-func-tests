@@ -11,6 +11,15 @@ if [[ $OSTYPE == 'darwin'* ]]; then
 fi
 
 
+function util::status () {
+    local optstate="$(set +o)"
+    set +e
+    "$@" 1>&2
+    printf "$?"
+    eval "$optstate"
+}
+
+
 function util::log () {
     printf "$(date +'%Y-%m-%dT%H:%M:%S%z')\t$*\n" >&2
 }

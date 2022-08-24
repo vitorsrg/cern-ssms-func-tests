@@ -48,7 +48,6 @@ klist -Af
 # Fetch tokens
 ################################################################################
 
-
 ssh \
     "vsantaro@lxplus8.cern.ch" \
     "hostname -I" \
