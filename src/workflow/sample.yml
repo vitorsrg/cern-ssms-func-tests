@@ -86,6 +86,9 @@ spec:
     - name: main
       dag:
         tasks:
+
+          ######################################################################
+
           - name: fetch-source
             template: fetch-source
             arguments:
@@ -96,6 +99,9 @@ spec:
                   value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
+
+          ######################################################################
+
           - name: create-cluster
             template: create-cluster
             depends: |
@@ -118,6 +124,9 @@ spec:
                   value: "{{workflow.parameters.may_create_cluster}}"
                 - name: may_fail_if_exists
                   value: "{{workflow.parameters.may_fail_if_exists}}"
+
+          ######################################################################
+
           - name: wait-cluster-ready
             template: wait-cluster-ready
             depends: |
@@ -130,10 +139,29 @@ spec:
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
+
+          ######################################################################
+
           - name: copy-source
             template: copy-source
             depends: |
               wait-cluster-ready.Succeeded
+            arguments:
+              parameters:
+                - name: openstack_token
+                  value: "{{workflow.parameters.openstack_token}}"
+                - name: source_path
+                  value: "{{workflow.parameters.source_path}}"
+                - name: cluster_name
+                  value: "{{workflow.parameters.cluster_name}}"
+
+          ######################################################################
+
+          - name: clean-source
+            template: clean-source
+            depends: |
+              copy-source.Succeeded
+              || copy-source.Failed
             arguments:
               parameters:
                 - name: openstack_token
@@ -150,13 +178,16 @@ spec:
         #           value: "{{workflow.parameters.os_token}}"
         #         - name: test-name
         #           value: "{{workflow.parameters.test-name}}"
+
+          ######################################################################
+
           - name: delete-cluster
             template: delete-cluster
             depends: |
               wait-cluster-ready.Failed
               || (
-                copy-source.Succeeded
-                || copy-source.Failed
+                clean-source.Succeeded
+                || clean-source.Failed
               )
             arguments:
               parameters:
@@ -320,6 +351,38 @@ spec:
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/copy_source.sh"
+        env:
+          - name: openstack_token
+            value: "{{inputs.parameters.openstack_token}}"
+          - name: source_path
+            value: "{{inputs.parameters.source_path}}"
+          - name: cluster_name
+            value: "{{inputs.parameters.cluster_name}}"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+
+    ############################################################################
+
+    - name: clean-source
+      inputs:
+        parameters:
+          - name: openstack_token
+          - name: source_path
+          - name: cluster_name
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: func-tests
+            mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
+        command: [/bin/bash]
+        args:
+          - "{{inputs.parameters.source_path}}/src/script/workflow/clean_source.sh"
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"

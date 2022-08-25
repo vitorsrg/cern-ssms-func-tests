@@ -31,19 +31,12 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-kubectl apply \
-    -f "./src/workflow/storage_class.yml"
-kubectl apply \
-    -f "./src/workflow/source_volume.yml"
-kubectl wait \
-    --for=condition=ready \
-    --timeout=60s \
-    pod "func-tests-port"
-
-kubectl exec \
-     "func-tests-port" \
-     -- \
-     sh -c 'rm -rf /tmp/test'
-kubectl cp \
-    "$source_path" \
-     "func-tests-port:/mnt/func-tests"
+kubectl delete sc \
+    "manila-delete" \
+    || true
+kubectl delete pvc \
+    "func-tests" \
+    || true
+kubectl delete pod \
+    "func-tests-port" \
+    || true
