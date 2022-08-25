@@ -5,7 +5,7 @@
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/workflow/copy_source.sh"
+#ii     bash "./src/script/workflow/clean_source.sh"
 #ii
 #ii Inputs:
 #ii     env     openstack_token
@@ -26,17 +26,24 @@ bash "./src/script/openstack/setup_k8s.sh" \
     "/root/kubeconfig.yml"
 export KUBECONFIG="/root/kubeconfig.yml"
 
-
 kubectl config set-context \
     --current \
     --namespace=default
 
-kubectl delete sc \
-    "manila-delete" \
+################################################################################
+
+kubectl delete pod \
+    "func-tests-port" \
+    --force \
+    --timeout=60s \
     || true
 kubectl delete pvc \
     "func-tests" \
+    --force \
+    --timeout=60s \
     || true
-kubectl delete pod \
-    "func-tests-port" \
+kubectl delete sc \
+    "manila-delete" \
+    --force \
+    --timeout=60s \
     || true

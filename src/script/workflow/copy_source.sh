@@ -26,10 +26,11 @@ bash "./src/script/openstack/setup_k8s.sh" \
     "/root/kubeconfig.yml"
 export KUBECONFIG="/root/kubeconfig.yml"
 
-
 kubectl config set-context \
     --current \
     --namespace=default
+
+################################################################################
 
 kubectl apply \
     -f "./src/workflow/storage_class.yml"
@@ -37,7 +38,7 @@ kubectl apply \
     -f "./src/workflow/source_volume.yml"
 kubectl wait \
     --for=condition=ready \
-    --timeout=60s \
+    --timeout=300s \
     pod "func-tests-port"
 
 kubectl exec \

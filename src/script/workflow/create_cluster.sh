@@ -31,6 +31,8 @@ source "./src/script/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
 
+################################################################################
+
 mkdir -p "/root/output/"
 
 cluster_exists=$((

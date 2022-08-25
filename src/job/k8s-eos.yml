@@ -1,33 +1,7 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: k8s-eos-script
-data:
-  script.sh: |
-    #!/bin/bash
+################################################################################
+#
+################################################################################
 
-    # sleep 15
-
-    ls_output=$(ls /eos 2>&1)
-    if [ $? -ne 0 ]; then
-      echo "error: $ls_output"
-      exit 1
-    fi
-
-    ls_output=$(ls /eos/user 2>&1)
-    if [ $? -ne 0 ]; then
-      echo "error: $ls_output"
-      exit 1
-    fi
-
-    n=$(ls /eos/user | wc  -l)
-    if [ $n -ne 26 ]; then
-      echo "error: wrong number of subdirectories in /eos/user, expected 26 but found ${n}"
-      exit 1
-    fi
-
-    echo "done"
----
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -44,9 +18,9 @@ spec:
         seLinuxOptions:
           type: "spc_t"
       volumes:
-        - name: k8s-eos-script
-          configMap:
-            name: k8s-eos-script
+        - name: func-tests
+          persistentVolumeClaim:
+            claimName: func-tests
         - name: eos
           hostPath:
             path: /var/eos
@@ -56,10 +30,10 @@ spec:
           imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/bash
-            - /tmp/script/script.sh
+            - /mnt/func-tests/src/script/test/k8s_eos.sh
           volumeMounts:
-            - name: k8s-eos-script
-              mountPath: /tmp/script
+            - name: func-tests
+              mountPath: /mnt/func-tests
             - name: eos
               mountPath: /eos
               mountPropagation: HostToContainer

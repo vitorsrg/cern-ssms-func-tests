@@ -157,11 +157,10 @@ spec:
 
           ######################################################################
 
-          - name: clean-source
-            template: clean-source
+          - name: exec-test-01
+            template: exec-test
             depends: |
               copy-source.Succeeded
-              || copy-source.Failed
             arguments:
               parameters:
                 - name: openstack_token
@@ -170,14 +169,54 @@ spec:
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
-        #   - name: exec-test
-        #     template: exec-test
-        #     arguments:
-        #       parameters:
-        #         - name: os_token
-        #           value: "{{workflow.parameters.os_token}}"
-        #         - name: test-name
-        #           value: "{{workflow.parameters.test-name}}"
+                - name: test_name
+                  value: "k8s-eos"
+                - name: test_key
+                  value: "01"
+
+          ######################################################################
+
+          - name: exec-test-02
+            template: exec-test
+            depends: |
+              copy-source.Succeeded
+            arguments:
+              parameters:
+                - name: openstack_token
+                  value: "{{workflow.parameters.openstack_token}}"
+                - name: source_path
+                  value: "{{workflow.parameters.source_path}}"
+                - name: cluster_name
+                  value: "{{workflow.parameters.cluster_name}}"
+                - name: test_name
+                  value: "k8s-eos"
+                - name: test_key
+                  value: "02"
+
+          ######################################################################
+
+          - name: clean-source
+            template: clean-source
+            depends: |
+              copy-source.Failed
+              || (
+                (
+                  exec-test-01.Succeeded
+                  || exec-test-01.Failed
+                )
+                && (
+                  exec-test-02.Succeeded
+                  || exec-test-02.Failed
+                )
+              )
+            arguments:
+              parameters:
+                - name: openstack_token
+                  value: "{{workflow.parameters.openstack_token}}"
+                - name: source_path
+                  value: "{{workflow.parameters.source_path}}"
+                - name: cluster_name
+                  value: "{{workflow.parameters.cluster_name}}"
 
           ######################################################################
 
@@ -200,7 +239,7 @@ spec:
                 - name: may_delete_cluster
                   value: "{{workflow.parameters.may_delete_cluster}}"
                 - name: has_created_cluster
-                  value: "{{steps['create-cluster'].outputs.has_created_cluster}}}"
+                  value: "{{steps['create-cluster'].outputs.has_created_cluster}}"
                 - name: should_delete_existing_cluster
                   value: "{{workflow.parameters.should_delete_existing_cluster}}"
         # when: |
@@ -368,6 +407,44 @@ spec:
 
     ############################################################################
 
+    - name: exec-test
+      inputs:
+        parameters:
+          - name: openstack_token
+          - name: source_path
+          - name: cluster_name
+          - name: test_name
+          - name: test_key
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: func-tests
+            mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
+        command: [/bin/bash]
+        args:
+          - "{{inputs.parameters.source_path}}/src/script/workflow/exec_test.sh"
+        env:
+          - name: openstack_token
+            value: "{{inputs.parameters.openstack_token}}"
+          - name: source_path
+            value: "{{inputs.parameters.source_path}}"
+          - name: cluster_name
+            value: "{{inputs.parameters.cluster_name}}"
+          - name: test_name
+            value: "{{inputs.parameters.test_name}}"
+          - name: test_key
+            value: "{{inputs.parameters.test_key}}"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+
+    ############################################################################
+
     - name: clean-source
       inputs:
         parameters:
@@ -397,33 +474,6 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
-
-    ############################################################################
-
-    # - name: exec-test
-    #   inputs:
-    #     parameters:
-    #       - name: os_token
-    #       - name: test-name
-    #   outputs:
-    #     parameters:
-    #       - name: test_result
-    #         valueFrom:
-    #           default: unknown
-    #           path: /root/test_result.txt
-    #   container:
-    #     image: registry.cern.ch/vsantaro/func-tests
-    #     volumeMounts:
-    #       - name: gitlab-repo
-    #         mountPath: /mnt/gitlab-repo
-    #     command: [/bin/bash]
-    #     args:
-    #       - /mnt/gitlab-repo/src/script/workflow/exec_test.sh
-    #     env:
-    #       - name: OS_TOKEN
-    #         value: "{{inputs.parameters.os_token}}"
-    #       - name: test_name
-    #         value: "{{inputs.parameters.test-name}}"
 
     ############################################################################
 

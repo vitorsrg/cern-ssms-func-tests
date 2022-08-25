@@ -1,42 +1,82 @@
 #!/bin/bash
 
+################################################################################
+#i  Wait until 
+#ii
+#ii
+#ii Example:
+#ii     bash "./src/script/workflow/exec_test.sh"
+#ii
+#ii Inputs:
+#ii     env     openstack_token
+#ii     env     source_path
+#ii     env     cluster_name
+#ii     env     test_name
+#ii     env     test_key
+################################################################################
+
 set -ex
 pwd
 
-source /mnt/gitlab-repo/src/script/openstack/setup_token.sh
+cd "$source_path"
 
-mkdir -p /root/func-tests--test/
-openstack coe cluster config \
-    vsantaro-func-tests--test \
-    --dir /root/func-tests--test/ \
-    --force \
-    || true
+source "./src/script/util.sh"
+source "./src/script/openstack/setup_token.sh" \
+    "$openstack_token"
+bash "./src/script/openstack/setup_k8s.sh" \
+    "$cluster_name" \
+    "/root/kubeconfig.yml"
+export KUBECONFIG="/root/kubeconfig.yml"
 
-ls  /root/func-tests--test/
+kubectl config set-context \
+    --current \
+    --namespace=default
 
-export KUBECONFIG="/root/func-tests--test/config"
-kubectl config set-context --current --namespace=default
+job_name="test-$test_key-$test_name"
 
-kubectl delete job "${test_name}" || true
-kubectl apply -f "/mnt/gitlab-repo/src/job/${test_name}.yml"
+################################################################################
+
+mkdir -p "/root/output/"
+
+pip3 install yq
+
+yq -Y \
+    ".metadata.name = \"$job_name\"" \
+    "./src/job/$test_name.yml" \
+    | kubectl apply \
+        -f -
 
 while true; do
-sleep 10
-active=$(kubectl get job ${test_name} -o json | jq -jr '.status | has("active")')
-succeeded=$(kubectl get job ${test_name} -o json | jq -jr '.status | has("succeeded")')
+    sleep 10
+    active=$(
+        kubectl get job $job_name -o json \
+        | jq -jr '.status | has("active")'
+    )
+    succeeded=$(
+        kubectl get job $job_name -o json \
+        | jq -jr '.status | has("succeeded")'
+    )
 
-if [ "$active" = "true" ]; then
-    printf "Waiting job to finish.\n"
-    continue
-elif [ "$succeeded" = "true" ]; then
-    printf "Job succeeded.\n"
-    kubectl logs "job/${test_name}"
-    printf "success" > /root/test_result.txt
-    break
-else
-    printf "Job failed.\n"
-    kubectl logs "job/${test_name}"
-    printf "failure" > /root/failure.txt
-    exit -1
-fi
+    if util::eval_bool "$active"; then
+        util::log "Waiting job to finish."
+        continue
+    elif util::eval_bool "$succeeded"; then
+        util::log "Job succeeded."
+        printf "success" > "/root/output/test_result.txt"
+        break
+    else
+        util::log "Job failed."
+        printf "failure" > "/root/output/test_result.txt"
+        break
+    fi
 done
+
+
+kubectl logs \
+    "job/$job_name"
+
+kubectl delete job \
+    "$job_name" \
+    --force \
+    --timeout=60s \
+    || true
