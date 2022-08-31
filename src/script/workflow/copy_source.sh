@@ -33,12 +33,22 @@ kubectl config set-context \
 
 ################################################################################
 
-kubectl apply \
-    -f "./src/k8s/sc/manila_ephemeral.yml"
-kubectl apply \
-    -f "./src/k8s/pvc/func_tests_src.yml"
-kubectl apply \
-    -f "./src/k8s/pod/func_tests_src_port.yml"
+yq -Y \
+    ".metadata.name += \"-$run_key\"" \
+    "./src/k8s/sc/manila_ephemeral.yml" \
+    | kubectl apply \
+        -f -
+yq -Y \
+    ".metadata.name += \"-$run_key\"" \
+    "./src/k8s/pvc/func_tests_src.yml" \
+    | kubectl apply \
+        -f -
+yq -Y \
+    ".metadata.name += \"-$run_key\"" \
+    "./src/k8s/pod/func_tests_src_port.yml" \
+    | kubectl apply \
+        -f -
+
 kubectl wait \
     --for=condition=ready \
     --timeout=300s \

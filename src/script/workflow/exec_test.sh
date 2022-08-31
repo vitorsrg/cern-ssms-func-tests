@@ -32,7 +32,7 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-job_name="test-$test_key-${test_name//_/-}"
+job_name="test-$test_key-${test_name//_/-}-$run_key"
 
 mkdir -p "/root/output/"
 

@@ -8,6 +8,7 @@
 #ii     bash "./src/script/workflow/clean_source.sh"
 #ii
 #ii Inputs:
+#ii     env     run_key
 #ii     env     openstack_token
 #ii     env     source_path
 #ii     env     cluster_name
@@ -33,17 +34,17 @@ kubectl config set-context \
 ################################################################################
 
 kubectl delete pod \
-    "func-tests-src-port" \
+    "func-tests-src-port-$run_key" \
     --force \
     --timeout=60s \
     || true
 kubectl delete pvc \
-    "func-tests-src" \
+    "func-tests-src-$run_key" \
     --force \
     --timeout=60s \
     || true
 kubectl delete sc \
-    "manila-ephemeral" \
+    "manila-ephemeral-$run_key" \
     --force \
     --timeout=60s \
     || true
