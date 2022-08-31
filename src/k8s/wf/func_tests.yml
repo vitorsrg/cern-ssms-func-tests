@@ -35,7 +35,7 @@ spec:
         value: gitlab.cern.ch/kubernetes/testing/functional.git
       ##########################################################################
       - name: source_path
-        value: /mnt/func-tests
+        value: /mnt/func-tests-src
       ##########################################################################
       - name: cluster_name
         value: "vsantaro-func-tests--test"

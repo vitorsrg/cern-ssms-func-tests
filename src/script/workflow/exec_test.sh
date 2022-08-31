@@ -38,16 +38,29 @@ mkdir -p "/root/output/"
 
 ################################################################################
 
-yq -Y \
-    ".metadata.name = \"$job_name\"" \
-    "./src/k8s/job/$test_name.yml" \
+cat "./src/k8s/job/$test_name.yml" \
+    | yq -Y \
+        ".metadata.name = \"$job_name\"" \
+    | yq -Y \
+        "(
+            .. .claimName? // empty 
+            | select(. == \"func-tests-src\")
+        ) += \"-$run_key\"" \
     | kubectl apply \
         -f -
 
-# kubectl wait \
-#     --for=condition=ready \
-#     --timeout=300s \
-#     "job/$job_name"
+sleep 10
+
+kubectl describe job "$job_name"
+
+kubectl logs \
+    "job/$job_name" \
+    --follow
+
+kubectl wait \
+    --for=condition=ready \
+    --timeout=300s \
+    "job/$job_name"
 
 kubectl logs \
     "job/$job_name" \

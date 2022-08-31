@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/bash
-            - /mnt/func-tests/src/script/test/always_fails.sh
+            - /mnt/func-tests-src/src/script/test/always_fails.sh
           resources:
             requests:
               memory: "256Mi"
@@ -29,9 +29,10 @@ spec:
               memory: "1Gi"
               cpu: "1"
           volumeMounts:
-            - name: func-tests
-              mountPath: /mnt/func-tests
+            - name: func-tests-src
+              mountPath: /mnt/func-tests-src
+              readOnly: true
       volumes:
-        - name: func-tests
+        - name: func-tests-src
           persistentVolumeClaim:
-            claimName: func-tests
+            claimName: func-tests-src

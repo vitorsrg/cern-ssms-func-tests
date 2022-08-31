@@ -22,10 +22,9 @@ cd "$source_path"
 source "./src/script/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
-bash "./src/script/openstack/setup_k8s.sh" \
+source "./src/script/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
-export KUBECONFIG="/root/kubeconfig.yml"
 
 kubectl config set-context \
     --current \
@@ -33,32 +32,45 @@ kubectl config set-context \
 
 ################################################################################
 
-yq -Y \
-    ".metadata.name += \"-$run_key\"" \
-    "./src/k8s/sc/manila_ephemeral.yml" \
+cat "./src/k8s/sc/manila_ephemeral.yml" \
+    | yq -Y \
+        ".metadata.name += \"-$run_key\"" \
     | kubectl apply \
         -f -
-yq -Y \
-    ".metadata.name += \"-$run_key\"" \
-    "./src/k8s/pvc/func_tests_src.yml" \
+cat "./src/k8s/pvc/func_tests_src.yml"\
+    | yq -Y \
+        ".metadata.name += \"-$run_key\"" \
+    | yq -Y \
+        ".spec.storageClassName += \"-$run_key\"" \
     | kubectl apply \
         -f -
-yq -Y \
-    ".metadata.name += \"-$run_key\"" \
-    "./src/k8s/pod/func_tests_src_port.yml" \
+cat "./src/k8s/pod/func_tests_src_port.yml" \
+    | yq -Y \
+        ".metadata.name += \"-$run_key\"" \
+    | yq -Y \
+        "(
+            .. .claimName? // empty
+            | select(. == \"func-tests-src\")
+        ) += \"-$run_key\"" \
     | kubectl apply \
         -f -
 
 kubectl wait \
-    --for=condition=Ready \
+    --for=condition=ready \
     --timeout=300s \
     pod "func-tests-src-port-$run_key"
 
+
+ls -1 \
+    "$source_path/" \
+    | xargs -I {} \
+        kubectl cp \
+            "$source_path/{}" \
+            "func-tests-src-port-$run_key:/mnt/func-tests-src/{}"
+
 # TODO: remove this
-# kubectl exec \
-#      "func-tests-src-port" \
-#      -- \
-#      sh -c 'rm -rf /tmp/test'
-kubectl cp \
-    "$source_path" \
-     "func-tests-src-port:/mnt/func-tests"
+ls "$source_path/"
+kubectl exec \
+     "func-tests-src-port-$run_key" \
+     -- \
+     ls "/mnt/func-tests-src/"

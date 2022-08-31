@@ -15,16 +15,17 @@ spec:
       restartPolicy: Never
       activeDeadlineSeconds: 120
       volumes:
-        - name: func-tests
+        - name: func-tests-src
           persistentVolumeClaim:
-            claimName: func-tests
+            claimName: func-tests-src
       containers:
         - name: always-succeeds
           image: bash:5.0.17
           imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/bash
-            - /mnt/func-tests/src/script/test/always_succeeds.sh
+            - /mnt/func-tests-src/src/script/test/always_succeeds.sh
           volumeMounts:
-            - name: func-tests
-              mountPath: /mnt/func-tests
+            - name: func-tests-src
+              mountPath: /mnt/func-tests-src
+              readOnly: true

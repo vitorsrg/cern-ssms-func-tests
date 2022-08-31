@@ -21,9 +21,10 @@ spec:
           memory: "1Gi"
           cpu: "1"
       volumeMounts:
-        - name: func-tests
-          mountPath: /mnt/func-tests
+        - name: func-tests-src
+          mountPath: /mnt/func-tests-src
+          readOnly: false
   volumes:
-    - name: func-tests
+    - name: func-tests-src
       persistentVolumeClaim:
         claimName: func-tests-src
