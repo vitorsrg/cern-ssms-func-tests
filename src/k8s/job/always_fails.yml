@@ -14,10 +14,6 @@ spec:
     spec:
       restartPolicy: Never
       activeDeadlineSeconds: 120
-      volumes:
-        - name: func-tests
-          persistentVolumeClaim:
-            claimName: func-tests
       containers:
         - name: always-fails
           image: bash:5.0.17
@@ -25,6 +21,17 @@ spec:
           command:
             - /usr/local/bin/bash
             - /mnt/func-tests/src/script/test/always_fails.sh
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
           volumeMounts:
             - name: func-tests
               mountPath: /mnt/func-tests
+      volumes:
+        - name: func-tests
+          persistentVolumeClaim:
+            claimName: func-tests

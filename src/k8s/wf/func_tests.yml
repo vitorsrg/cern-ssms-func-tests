@@ -8,8 +8,7 @@ kind: Workflow
 ################################################################################
 
 metadata:
-  # generateName: func-test-
-  name: func-test
+  name: func-tests
   labels:
     workflows.argoproj.io/archive-strategy: "false"
   annotations:

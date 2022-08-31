@@ -13,6 +13,13 @@ spec:
       command:
         - "sleep"
         - "infinity"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "1"
       volumeMounts:
         - name: func-tests
           mountPath: /mnt/func-tests

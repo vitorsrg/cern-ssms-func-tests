@@ -11,7 +11,6 @@
 #ii     env     openstack_token
 #ii     env     source_path
 #ii     env     cluster_name
-#ii     # TODO: env should_wait_cluster_ready
 ################################################################################
 
 set -ex

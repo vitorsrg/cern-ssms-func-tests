@@ -45,7 +45,7 @@ kubectl apply \
     <(
         yq -Y \
             ".metadata.name += \"-$run_key\"" \
-            "./src/k8s/wf/func_test.yml"
+            "./src/k8s/wf/func_tests.yml"
     ) \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \

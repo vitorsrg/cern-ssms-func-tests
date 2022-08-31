@@ -50,7 +50,7 @@ yq -Y \
         -f -
 
 kubectl wait \
-    --for=condition=ready \
+    --for=condition=Ready \
     --timeout=300s \
     pod "func-tests-src-port-$run_key"
 
