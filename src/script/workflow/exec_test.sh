@@ -34,11 +34,12 @@ kubectl config set-context \
 
 job_name="test-$test_key-$test_name"
 
-################################################################################
-
 mkdir -p "/root/output/"
 
-pip3 install yq
+# TODO: preinstall in image
+pip3 install yq  
+
+################################################################################
 
 yq -Y \
     ".metadata.name = \"$job_name\"" \
@@ -46,37 +47,35 @@ yq -Y \
     | kubectl apply \
         -f -
 
-while true; do
-    sleep 10
-    active=$(
-        kubectl get job $job_name -o json \
-        | jq -jr '.status | has("active")'
-    )
-    succeeded=$(
-        kubectl get job $job_name -o json \
-        | jq -jr '.status | has("succeeded")'
-    )
-
-    if util::eval_bool "$active"; then
-        util::log "Waiting job to finish."
-        continue
-    elif util::eval_bool "$succeeded"; then
-        util::log "Job succeeded."
-        printf "success" > "/root/output/test_result.txt"
-        break
-    else
-        util::log "Job failed."
-        printf "failure" > "/root/output/test_result.txt"
-        break
-    fi
-done
-
+kubectl wait \
+    --for=condition=Ready \
+    --timeout=300s \
+    "job/$job_name"
 
 kubectl logs \
-    "job/$job_name"
+    "job/$job_name" \
+    --follow
+
+################################################################################
+
+succeeded=$(
+    kubectl get job $job_name -o json \
+    | jq -jr '.status | has("succeeded")'
+)
 
 kubectl delete job \
     "$job_name" \
     --force \
     --timeout=60s \
     || true
+
+if util::eval_bool "$succeeded"; then
+    util::log "Job succeeded."
+    printf "success" > "/root/output/test_result.txt"
+    exit 0
+else
+    util::log "Job failed."
+    printf "failure" > "/root/output/test_result.txt"
+    exit -1
+fi
+

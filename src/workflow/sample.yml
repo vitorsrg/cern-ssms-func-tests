@@ -54,7 +54,7 @@ spec:
         value: "false"
       - name: test_name
       - name: may_delete_cluster
-        value: "false"
+        value: "true"
       - name: should_delete_existing_cluster
         value: "true"
 
