@@ -23,16 +23,15 @@ cd "$source_path"
 source "./src/script/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
-bash "./src/script/openstack/setup_k8s.sh" \
+source "./src/script/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
-export KUBECONFIG="/root/kubeconfig.yml"
 
 kubectl config set-context \
     --current \
     --namespace=default
 
-pod_name="test-$test_key-${test_name//_/-}-$run_key"
+pod_name="test-$test_key-${test_name//_/-}$run_suffix"
 
 mkdir -p "/root/output/"
 
@@ -45,7 +44,7 @@ cat "./src/k8s/test/$test_name.yml" \
         "(
             .. .claimName? // empty 
             | select(. == \"func-tests-src\")
-        ) += \"-$run_key\"" \
+        ) += \"$run_suffix\"" \
     | kubectl apply \
         -f -
 

@@ -7,7 +7,9 @@ _script__util__guard=$(date)
 
 if [[ $OSTYPE == 'darwin'* ]]; then
     export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+    export PATH="/usr/local/opt/findutils/libexec/gnubin/:$PATH"
     export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+    export MANPATH="/usr/local/opt/findutils/libexec/gnuman:$MANPATH"
 fi
 
 

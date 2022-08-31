@@ -26,7 +26,7 @@ spec:
   arguments:
     parameters:
       ##########################################################################
-      - name: run_key
+      - name: run_suffix
       ##########################################################################
       - name: openstack_token
       ##########################################################################
@@ -150,8 +150,8 @@ spec:
               wait-cluster-ready.Succeeded
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -167,8 +167,8 @@ spec:
               copy-source.Succeeded
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -188,8 +188,8 @@ spec:
               copy-source.Succeeded
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -209,8 +209,8 @@ spec:
               copy-source.Succeeded
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -230,8 +230,8 @@ spec:
               copy-source.Succeeded
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -254,8 +254,8 @@ spec:
             # {{steps['create-cluster'].outputs.has_created_cluster}} == true
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -307,8 +307,8 @@ spec:
               )
             arguments:
               parameters:
-                - name: run_key
-                  value: "{{workflow.parameters.run_key}}"
+                - name: run_suffix
+                  value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -476,7 +476,7 @@ spec:
     - name: copy-source
       inputs:
         parameters:
-          - name: run_key
+          - name: run_suffix
           - name: openstack_token
           - name: source_path
           - name: cluster_name
@@ -490,8 +490,8 @@ spec:
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/copy_source.sh"
         env:
-          - name: run_key
-            value: "{{inputs.parameters.run_key}}"
+          - name: run_suffix
+            value: "{{inputs.parameters.run_suffix}}"
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
           - name: source_path
@@ -511,7 +511,7 @@ spec:
     - name: exec-test
       inputs:
         parameters:
-          - name: run_key
+          - name: run_suffix
           - name: openstack_token
           - name: source_path
           - name: cluster_name
@@ -527,8 +527,8 @@ spec:
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/exec_test.sh"
         env:
-          - name: run_key
-            value: "{{inputs.parameters.run_key}}"
+          - name: run_suffix
+            value: "{{inputs.parameters.run_suffix}}"
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
           - name: source_path
@@ -552,7 +552,7 @@ spec:
     - name: clean-source
       inputs:
         parameters:
-          - name: run_key
+          - name: run_suffix
           - name: openstack_token
           - name: source_path
           - name: cluster_name
@@ -566,8 +566,8 @@ spec:
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/clean_source.sh"
         env:
-          - name: run_key
-            value: "{{inputs.parameters.run_key}}"
+          - name: run_suffix
+            value: "{{inputs.parameters.run_suffix}}"
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
           - name: source_path

@@ -17,13 +17,16 @@
 
 set -ex
 
+source "./src/script/util.sh"
+
 export KUBECONFIG="./secrets/kubeconfig.yml"
 
-run_key=$(
+run_suffix=$(
     cat /dev/urandom \
         | base64 \
-        | tr -cu -d '[:lower:][:digit:]' \
-        | head -c 4
+        | tr -cd '[:lower:][:digit:]' \
+        | head -c 4 \
+        | xargs -i printf '-%s' {}
 )
 
 ################################################################################
@@ -44,11 +47,12 @@ kubectl apply \
     -n argo \
     <(
         yq -Y \
-            ".metadata.name += \"-$run_key\"" \
+            ".metadata.name += \"$run_suffix\"" \
             "./src/k8s/wf/func_tests.yml"
     ) \
+    -o json \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
     -p "test_name=k8s-eos" \
-    -p "run_key=$run_key" \
+    -p "run_suffix=$run_suffix" \
     "$@"
