@@ -32,15 +32,15 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-job_name="test-$test_key-${test_name//_/-}-$run_key"
+pod_name="test-$test_key-${test_name//_/-}-$run_key"
 
 mkdir -p "/root/output/"
 
 ################################################################################
 
-cat "./src/k8s/job/$test_name.yml" \
+cat "./src/k8s/test/$test_name.yml" \
     | yq -Y \
-        ".metadata.name = \"$job_name\"" \
+        ".metadata.name = \"$pod_name\"" \
     | yq -Y \
         "(
             .. .claimName? // empty 
@@ -51,30 +51,30 @@ cat "./src/k8s/job/$test_name.yml" \
 
 sleep 10
 
-kubectl describe job "$job_name"
-
-kubectl logs \
-    "job/$job_name" \
-    --follow
+kubectl describe pod "$pod_name"
 
 kubectl wait \
     --for=condition=ready \
     --timeout=300s \
-    "job/$job_name"
+    pod \
+    "$pod_name"
 
 kubectl logs \
-    "job/$job_name" \
+    "$pod_name" \
     --follow
 
 ################################################################################
 
+kubectl get pod "$pod_name" -o json
+
 succeeded=$(
-    kubectl get job $job_name -o json \
+    kubectl get job $pod_name -o json \
     | jq -jr '.status | has("succeeded")'
 )
 
+
 kubectl delete job \
-    "$job_name" \
+    "$pod_name" \
     --force \
     --timeout=60s \
     || true

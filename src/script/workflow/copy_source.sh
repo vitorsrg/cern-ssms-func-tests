@@ -58,7 +58,8 @@ cat "./src/k8s/pod/func_tests_src_port.yml" \
 kubectl wait \
     --for=condition=ready \
     --timeout=300s \
-    pod "func-tests-src-port-$run_key"
+    pod \
+    "func-tests-src-port-$run_key"
 
 
 ls -1 \
