@@ -8,6 +8,7 @@
 #ii     bash "./src/script/workflow/copy_source.sh"
 #ii
 #ii Inputs:
+#ii     env     run_key
 #ii     env     openstack_token
 #ii     env     source_path
 #ii     env     cluster_name
@@ -33,18 +34,21 @@ kubectl config set-context \
 ################################################################################
 
 kubectl apply \
-    -f "./src/workflow/storage_class.yml"
+    -f "./src/k8s/sc/manila_ephemeral.yml"
 kubectl apply \
-    -f "./src/workflow/source_volume.yml"
+    -f "./src/k8s/pvc/func_tests_src.yml"
+kubectl apply \
+    -f "./src/k8s/pod/func_tests_src_port.yml"
 kubectl wait \
     --for=condition=ready \
     --timeout=300s \
-    pod "func-tests-port"
+    pod "func-tests-src-port"
 
-kubectl exec \
-     "func-tests-port" \
-     -- \
-     sh -c 'rm -rf /tmp/test'
+# TODO: remove this
+# kubectl exec \
+#      "func-tests-src-port" \
+#      -- \
+#      sh -c 'rm -rf /tmp/test'
 kubectl cp \
     "$source_path" \
-     "func-tests-port:/mnt/func-tests"
+     "func-tests-src-port:/mnt/func-tests"

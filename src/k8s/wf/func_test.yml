@@ -8,7 +8,8 @@ kind: Workflow
 ################################################################################
 
 metadata:
-  generateName: func-tests-
+  # generateName: func-test-
+  name: func-test
   labels:
     workflows.argoproj.io/archive-strategy: "false"
   annotations:
@@ -25,6 +26,8 @@ spec:
 
   arguments:
     parameters:
+      ##########################################################################
+      - name: run_key
       ##########################################################################
       - name: openstack_token
       ##########################################################################
@@ -54,9 +57,9 @@ spec:
         value: "false"
       - name: test_name
       - name: may_delete_cluster
-        value: "true"
+        value: "false"
       - name: should_delete_existing_cluster
-        value: "true"
+        value: "false"
 
   ##############################################################################
 
@@ -148,6 +151,8 @@ spec:
               wait-cluster-ready.Succeeded
             arguments:
               parameters:
+                - name: run_key
+                  value: "{{workflow.parameters.run_key}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
@@ -170,7 +175,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "k8s-eos"
+                  value: "k8s_eos"
                 - name: test_key
                   value: "01"
 
@@ -189,7 +194,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "k8s-eos"
+                  value: "k8s_eos"
                 - name: test_key
                   value: "02"
 
@@ -208,7 +213,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always-succeeds"
+                  value: "always_succeeds"
                 - name: test_key
                   value: "03"
 
@@ -227,7 +232,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always-fails"
+                  value: "always_fails"
                 - name: test_key
                   value: "04"
 
@@ -249,7 +254,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always-fails"
+                  value: "always_fails"
                 - name: test_key
                   value: "05"
 

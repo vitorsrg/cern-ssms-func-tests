@@ -33,17 +33,17 @@ kubectl config set-context \
 ################################################################################
 
 kubectl delete pod \
-    "func-tests-port" \
+    "func-tests-src-port" \
     --force \
     --timeout=60s \
     || true
 kubectl delete pvc \
-    "func-tests" \
+    "func-tests-src" \
     --force \
     --timeout=60s \
     || true
 kubectl delete sc \
-    "manila-delete" \
+    "manila-ephemeral" \
     --force \
     --timeout=60s \
     || true

@@ -17,17 +17,38 @@
 
 set -ex
 
+export KUBECONFIG="./secrets/kubeconfig.yml"
+
+run_key=$(
+    cat /dev/urandom \
+        | base64 \
+        | tr -cu -d '[:lower:][:digit:]' \
+        | head -c 4
+)
+
+################################################################################
+
+# NOTE: convenience for quick testing
+# TODO: remove this
+git add -A
 git commit -S -a -m 'fixup' || true
 git push gitlab HEAD:vitorsrg
 
-export KUBECONFIG="./secrets/kubeconfig.yml"
+################################################################################
 
 kubectl apply \
-    -f "./src/workflow/storage_class.yml"
+    -f "./src/k8s/sc/manila_ephemeral.yml"
 
 ./argo.bin \
-    submit -n argo ./src/workflow/sample.yml \
+    submit \
+    -n argo \
+    <(
+        yq -Y \
+            ".metadata.name += \"-$run_key\"" \
+            "./src/k8s/wf/func_test.yml"
+    ) \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
     -p "test_name=k8s-eos" \
+    -p "run_key=$run_key" \
     "$@"

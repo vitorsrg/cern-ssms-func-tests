@@ -1,0 +1,15 @@
+################################################################################
+#
+################################################################################
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: func-tests-src
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manila-ephemeral
+  resources:
+    requests:
+      storage: 1Gi

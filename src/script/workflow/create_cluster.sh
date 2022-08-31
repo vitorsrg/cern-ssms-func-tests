@@ -37,9 +37,9 @@ mkdir -p "/root/output/"
 
 cluster_exists=$((
     ! $(
-    util::status \
-        openstack coe cluster show \
-            "vsantaro-func-tests--test"
+        util::status \
+            openstack coe cluster show \
+                "vsantaro-func-tests--test"
     )
 ))
 

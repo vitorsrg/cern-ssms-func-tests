@@ -5,7 +5,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: manila-delete
+  name: manila-ephemeral
 provisioner: cephfs.manila.csi.openstack.org
 reclaimPolicy: Delete
 allowVolumeExpansion: true

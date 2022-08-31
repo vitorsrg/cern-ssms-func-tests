@@ -32,7 +32,7 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-job_name="test-$test_key-$test_name"
+job_name="test-$test_key-${test_name//_/-}"
 
 mkdir -p "/root/output/"
 
@@ -43,14 +43,14 @@ pip3 install yq
 
 yq -Y \
     ".metadata.name = \"$job_name\"" \
-    "./src/job/$test_name.yml" \
+    "./src/k8s/job/$test_name.yml" \
     | kubectl apply \
         -f -
 
-kubectl wait \
-    --for=condition=Ready \
-    --timeout=300s \
-    "job/$job_name"
+# kubectl wait \
+#     --for=condition=ready \
+#     --timeout=300s \
+#     "job/$job_name"
 
 kubectl logs \
     "job/$job_name" \
@@ -72,10 +72,10 @@ kubectl delete job \
 if util::eval_bool "$succeeded"; then
     util::log "Job succeeded."
     printf "success" > "/root/output/test_result.txt"
-    exit 0
+    # exit 0
 else
     util::log "Job failed."
     printf "failure" > "/root/output/test_result.txt"
-    exit -1
+    # exit -1
 fi
 

@@ -3,26 +3,9 @@
 ################################################################################
 
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: func-tests
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: manila-delete
-  resources:
-    requests:
-      storage: 1Gi
-
----
-################################################################################
-#
-################################################################################
-
-apiVersion: v1
 kind: Pod
 metadata:
-  name: func-tests-port
+  name: func-tests-src-port
 spec:
   containers:
     - name: alpine
@@ -36,4 +19,4 @@ spec:
   volumes:
     - name: func-tests
       persistentVolumeClaim:
-        claimName: func-tests
+        claimName: func-tests-src
