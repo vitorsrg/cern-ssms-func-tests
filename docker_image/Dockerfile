@@ -2,7 +2,6 @@
 # Image registry.cern.ch/vsantaro/func-tests
 ################################################################################
 
-# FROM ubuntu:latest
 FROM condaforge/miniforge3:4.13.0-1
 
 SHELL ["/bin/bash", "-c"]
@@ -50,6 +49,10 @@ RUN apt-get install -qq -y \
 
 RUN apt-get install -qq -y \
     jq
+
+RUN pip install \
+    "yq==3.1.0" \
+    --ignore-installed
 
 ################################################################################
 # Entrypoint

@@ -36,9 +36,6 @@ job_name="test-$test_key-${test_name//_/-}-$run_key"
 
 mkdir -p "/root/output/"
 
-# TODO: preinstall in image
-pip3 install yq  
-
 ################################################################################
 
 yq -Y \

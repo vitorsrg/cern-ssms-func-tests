@@ -52,7 +52,7 @@ yq -Y \
 kubectl wait \
     --for=condition=ready \
     --timeout=300s \
-    pod "func-tests-src-port"
+    pod "func-tests-src-port-$run_key"
 
 # TODO: remove this
 # kubectl exec \

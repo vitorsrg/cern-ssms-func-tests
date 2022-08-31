@@ -14,9 +14,6 @@ manage::main () {
     "remount" )
         manage::remount
     ;;
-    "build_docker" )
-        manage::build_docker
-    ;;
     "serve_argo" )
         manage::serve_argo
     ;;
@@ -32,21 +29,6 @@ manage::remount () {
     umount -f "./lxplus8_home/" || true
     mkdir -p "./lxplus8_home/"
     sshfs "vsantaro@$(cat lxplus8_host.txt):./" "./lxplus8_home/"
-}
-
-manage::build_docker () {
-    set -x
-
-    docker build \
-        -t registry.cern.ch/vsantaro/func-tests \
-        --squash \
-        ./docker_image
-    cat ./secrets/harbor_token.txt \
-        | docker login \
-            registry.cern.ch \
-            --username vsantaro \
-            --password-stdin
-    docker push registry.cern.ch/vsantaro/func-tests
 }
 
 manage::serve_argo () {
