@@ -50,7 +50,6 @@ kubectl apply \
             ".metadata.name += \"$run_suffix\"" \
             "./src/k8s/wf/func_tests.yml"
     ) \
-    -o json \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
     -p "test_name=k8s-eos" \

@@ -42,7 +42,7 @@ spec:
       - name: cluster_template
         value: "kubernetes-1.22.9-1"
       - name: cluster_node_count
-        value: "2"
+        value: "4"
       - name: cluster_labels_json
         value: |
           {

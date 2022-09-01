@@ -39,7 +39,8 @@ cluster_exists=$((
     ! $(
         util::status \
             openstack coe cluster show \
-                "vsantaro-func-tests--test"
+                "$cluster_name" \
+                2> "/dev/null"
     )
 ))
 

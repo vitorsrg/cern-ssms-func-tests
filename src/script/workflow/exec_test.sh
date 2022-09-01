@@ -31,7 +31,15 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-pod_name="test-$test_key-${test_name//_/-}$run_suffix"
+pod_suffix=$(
+    cat /dev/urandom \
+        | base64 \
+        | tr -cd '[:lower:][:digit:]' \
+        | head -c 4 \
+        | xargs -i printf '-%s' {}
+)
+
+pod_name="test-$test_key-${test_name//_/-}$run_suffix$pod_suffix"
 
 mkdir -p "/root/output/"
 
@@ -48,15 +56,16 @@ cat "./src/k8s/test/$test_name.yml" \
     | kubectl apply \
         -f -
 
-sleep 10
-
-kubectl describe pod "$pod_name"
-
-kubectl wait \
+if ! kubectl wait pod \
     --for=condition=ready \
     --timeout=300s \
-    pod \
-    "$pod_name"
+    "$pod_name"; then
+    kubectl describe pod \
+        "$pod_name"
+
+    util::log "Pod took too long to start."
+    exit -1
+fi
 
 kubectl logs \
     "$pod_name" \
@@ -64,27 +73,40 @@ kubectl logs \
 
 ################################################################################
 
-kubectl get pod "$pod_name" -o json
-
-succeeded=$(
-    kubectl get job $pod_name -o json \
-    | jq -jr '.status | has("succeeded")'
+exit_code=$(
+    kubectl get pod \
+        "$pod_name" \
+        -o json \
+        | jq -jr \
+            '
+            .status.containerStatuses
+            | map(select(.name == "main"))
+            | first
+            | .state.terminated.exitCode
+            '
 )
 
-
-kubectl delete job \
+kubectl delete pod \
     "$pod_name" \
     --force \
     --timeout=60s \
     || true
 
-if util::eval_bool "$succeeded"; then
-    util::log "Job succeeded."
-    printf "success" > "/root/output/test_result.txt"
-    # exit 0
+if ! (
+    [[ "$exit_code" -ge "0" ]] \
+    && [[ "$exit_code" -le "255" ]]
+); then
+    util::log "Unexpected exit code."
+    # TODO: rename to exit_code.txt
+    printf "255" \
+        > "/root/output/test_result.txt"
+    exit -1
 else
-    util::log "Job failed."
-    printf "failure" > "/root/output/test_result.txt"
-    # exit -1
+    if [[ "$exit_code" == "0" ]]; then
+        util::log "Test succeeded."
+    else
+        util::log "Test failed."
+    fi
+    printf "$exit_code" \
+        > "/root/output/test_result.txt"
 fi
-
