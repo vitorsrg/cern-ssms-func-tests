@@ -14,7 +14,7 @@ cd "$source_path"
 
 source "./src/script/util.sh"
 
-# sleep 10
+sleep 10  # prevent pod from finishing too fast
 
 ################################################################################
 

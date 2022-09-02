@@ -69,7 +69,7 @@ if ! kubectl wait pod \
         "$pod_name"
 
     util::log "Pod took too long to start."
-    # exit -1
+    exit -1
 fi
 
 kubectl logs \
@@ -77,12 +77,6 @@ kubectl logs \
     --follow
 
 ################################################################################
-
-kubectl get pod \
-    "$pod_name" \
-    -o json \
-    | jq -jr \
-        '.status.containerStatuses[0]'
 
 exit_code=$(
     kubectl get pod \

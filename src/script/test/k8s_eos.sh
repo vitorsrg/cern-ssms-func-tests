@@ -7,7 +7,7 @@
 set -ex
 pwd
 
-# sleep 10
+sleep 10  # prevent pod from finishing too fast
 
 ################################################################################
 
