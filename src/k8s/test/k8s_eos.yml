@@ -17,6 +17,16 @@ spec:
       command:
         - /usr/local/bin/bash
         - /mnt/func-tests-src/src/script/test/k8s_eos.sh
+      env:
+        - name: source_path
+          value: "{{workflow.parameters.source_path}}"
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "500m"
+        limits:
+          memory: "4Gi"
+          cpu: "1"
       volumeMounts:
         - name: func-tests-src
           mountPath: /mnt/func-tests-src

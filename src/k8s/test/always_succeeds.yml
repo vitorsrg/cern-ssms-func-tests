@@ -15,10 +15,10 @@ spec:
         - /mnt/func-tests-src/src/script/test/always_succeeds.sh
       resources:
         requests:
-          memory: "256Mi"
+          memory: "1Gi"
           cpu: "500m"
         limits:
-          memory: "1Gi"
+          memory: "4Gi"
           cpu: "1"
       volumeMounts:
         - name: func-tests-src

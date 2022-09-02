@@ -378,10 +378,10 @@ spec:
             ${source_path}
         resources:
           requests:
-            memory: "256Mi"
+            memory: "1Gi"
             cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -436,7 +436,7 @@ spec:
             memory: "64Mi"
             cpu: "250m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -468,7 +468,7 @@ spec:
             memory: "64Mi"
             cpu: "100m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -500,10 +500,10 @@ spec:
             value: "{{inputs.parameters.cluster_name}}"
         resources:
           requests:
-            memory: "256Mi"
+            memory: "1Gi"
             cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -541,10 +541,10 @@ spec:
             value: "{{inputs.parameters.test_key}}"
         resources:
           requests:
-            memory: "256Mi"
+            memory: "1Gi"
             cpu: "100m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -576,10 +576,10 @@ spec:
             value: "{{inputs.parameters.cluster_name}}"
         resources:
           requests:
-            memory: "256Mi"
+            memory: "1Gi"
             cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
 
     ############################################################################
@@ -622,8 +622,8 @@ spec:
             value: "{{inputs.parameters.should_delete_existing_cluster}}"
         resources:
           requests:
-            memory: "256Mi"
+            memory: "1Gi"
             cpu: "100m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1"
