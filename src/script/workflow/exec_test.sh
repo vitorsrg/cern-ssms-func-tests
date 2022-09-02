@@ -104,7 +104,7 @@ if ! (
     util::log "Unexpected exit code."
     # TODO: rename to exit_code.txt
     printf "255" \
-        > "/root/output/test_result.txt"
+        > "/root/output/exit_code.txt"
     exit -1
 else
     if [[ "$exit_code" == "0" ]]; then
@@ -113,5 +113,5 @@ else
         util::log "Test failed."
     fi
     printf "$exit_code" \
-        > "/root/output/test_result.txt"
+        > "/root/output/exit_code.txt"
 fi

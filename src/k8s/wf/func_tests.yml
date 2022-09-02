@@ -517,6 +517,11 @@ spec:
           - name: cluster_name
           - name: test_name
           - name: test_key
+      outputs:
+        parameters:
+          - name: exit_code
+            valueFrom:
+              path: /root/output/exit_code.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
