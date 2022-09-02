@@ -55,3 +55,50 @@ kubectl apply \
     -p "test_name=k8s-eos" \
     -p "run_suffix=$run_suffix" \
     "$@"
+
+kubectl get wf \
+    -n argo \
+    "func-tests$run_suffix" \
+    -o json \
+    | jq -jr \
+        '
+        .status.nodes
+        | to_entries
+        | map(.value)
+        | map(select(.templateName == "exec-test"))
+        | map(
+            {
+                name: .displayName,
+                test_key: (
+                    try (
+                        .inputs.parameters
+                        | map(select(.name == "test_key"))
+                        | first
+                        | .value
+                    )
+                    // null
+                ),
+                test_name: (
+                    try (
+                        .inputs.parameters
+                        | map(select(.name == "test_name"))
+                        | first
+                        | .value
+                    )
+                    // null
+                ),
+                exit_code: (
+                    try (
+                        .outputs.parameters
+                        | map(select(.name == "exit_code"))
+                        | first
+                        | .value
+                    )
+                    // null
+                )
+            }
+        )
+        | sort_by(.name)
+        | (.[0] | ([keys[] | .] |(., map(length*"-")))), (.[] | ([keys[] as $k | .[$k]]))
+        ' \
+    | column -t -s "\t"

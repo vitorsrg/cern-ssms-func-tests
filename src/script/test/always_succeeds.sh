@@ -19,4 +19,4 @@ sleep 10  # prevent pod from finishing too fast
 ################################################################################
 
 util::log "This test always succeeds."
-exit -1
+exit 0
