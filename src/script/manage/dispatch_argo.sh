@@ -52,6 +52,7 @@ kubectl apply \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
     -p "test_name=k8s-eos" \
+    -p "test_names=k8s_eos k8s_eos always_succeeds always_fails" \
     -p "run_suffix=$run_suffix" \
     "$@"
 
@@ -97,6 +98,11 @@ kubectl get wf \
             }
         )
         | sort_by(.name)
-        | (.[0] | ([keys[] | .] |(., map(length*"-")))), (.[] | ([keys[] as $k | .[$k]]))
-        ' \
-    | column -t -s "\t"
+        '
+    #     | (
+    #         (.[0] | ([keys[] | .])),
+    #         (.[] | ([keys[] as $k | .[$k]]))
+    #     )
+    #     | @tsv
+    #     ' \
+    # | column -t -s "\t"

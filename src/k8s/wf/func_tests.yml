@@ -55,6 +55,9 @@ spec:
       - name: may_fail_if_exists
         value: "false"
       - name: test_name
+      - name: test_names
+      - name: max_test_count
+        value: "5"
       - name: may_delete_cluster
         value: "false"
       - name: should_delete_existing_cluster
@@ -104,6 +107,21 @@ spec:
 
           ######################################################################
 
+          - name: process-input
+            template: process-input
+            depends: |
+              fetch-source.Succeeded
+            arguments:
+              parameters:
+                - name: source_path
+                  value: "{{workflow.parameters.source_path}}"
+                - name: test_names
+                  value: "{{workflow.parameters.test_names}}"
+                - name: max_test_count
+                  value: "{{workflow.parameters.max_test_count}}"
+
+          ######################################################################
+
           - name: create-cluster
             template: create-cluster
             depends: |
@@ -148,6 +166,7 @@ spec:
             template: copy-source
             depends: |
               wait-cluster-ready.Succeeded
+              && process-input.Succeeded
             arguments:
               parameters:
                 - name: run_suffix
@@ -165,6 +184,8 @@ spec:
             template: exec-test
             depends: |
               copy-source.Succeeded
+            when: |
+              '{{step.process-input.outputs.test_name_01}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -176,7 +197,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "k8s_eos"
+                  value: "{{tasks.process-input.outputs.parameters.test_name_01}}"
                 - name: test_key
                   value: "01"
 
@@ -186,6 +207,8 @@ spec:
             template: exec-test
             depends: |
               copy-source.Succeeded
+            when: |
+              '{{step.process-input.outputs.test_name_02}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -197,7 +220,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "k8s_eos"
+                  value: "{{tasks.process-input.outputs.parameters.test_name_02}}"
                 - name: test_key
                   value: "02"
 
@@ -207,6 +230,8 @@ spec:
             template: exec-test
             depends: |
               copy-source.Succeeded
+            when: |
+              '{{step.process-input.outputs.test_name_03}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -218,7 +243,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always_succeeds"
+                  value: "{{tasks.process-input.outputs.parameters.test_name_03}}"
                 - name: test_key
                   value: "03"
 
@@ -228,6 +253,8 @@ spec:
             template: exec-test
             depends: |
               copy-source.Succeeded
+            when: |
+              '{{step.process-input.outputs.test_name_04}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -239,7 +266,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always_fails"
+                  value: "{{tasks.process-input.outputs.parameters.test_name_04}}"
                 - name: test_key
                   value: "04"
 
@@ -250,8 +277,7 @@ spec:
             depends: |
               copy-source.Succeeded
             when: |
-              false
-            # {{steps['create-cluster'].outputs.has_created_cluster}} == true
+              '{{step.process-input.outputs.test_name_05}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -263,7 +289,7 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "always_fails"
+                  value: "{{tasks.process-input.outputs.parameters.test_name_05}}"
                 - name: test_key
                   value: "05"
 
@@ -386,6 +412,55 @@ spec:
 
     ############################################################################
 
+    - name: process-input
+      inputs:
+        parameters:
+          - name: test_names
+          - name: max_test_count
+          - name: source_path
+      outputs:
+        parameters:
+          - name: test_name_01
+            valueFrom:
+              path: /root/output/test_name_01.txt
+          - name: test_name_02
+            valueFrom:
+              path: /root/output/test_name_02.txt
+          - name: test_name_03
+            valueFrom:
+              path: /root/output/test_name_03.txt
+          - name: test_name_04
+            valueFrom:
+              path: /root/output/test_name_04.txt
+          - name: test_name_05
+            valueFrom:
+              path: /root/output/test_name_05.txt
+      container:
+        image: registry.cern.ch/vsantaro/func-tests
+        volumeMounts:
+          - name: func-tests
+            mountPath: "{{inputs.parameters.source_path}}"
+            readOnly: true
+        command: [/bin/bash]
+        args:
+          - "{{inputs.parameters.source_path}}/src/script/workflow/process_input.sh"
+        env:
+          - name: source_path
+            value: "{{inputs.parameters.source_path}}"
+          - name: test_names
+            value: "{{inputs.parameters.test_names}}"
+          - name: max_test_count
+            value: "{{inputs.parameters.max_test_count}}"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "250m"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+
+    ############################################################################
+
     - name: create-cluster
       inputs:
         parameters:
@@ -433,7 +508,7 @@ spec:
             value: "{{inputs.parameters.may_fail_if_exists}}"
         resources:
           requests:
-            memory: "64Mi"
+            memory: "1Gi"
             cpu: "250m"
           limits:
             memory: "4Gi"
@@ -465,7 +540,7 @@ spec:
             value: "{{inputs.parameters.cluster_name}}"
         resources:
           requests:
-            memory: "64Mi"
+            memory: "1Gi"
             cpu: "100m"
           limits:
             memory: "4Gi"
@@ -501,10 +576,10 @@ spec:
         resources:
           requests:
             memory: "1Gi"
-            cpu: "500m"
+            cpu: "1"
           limits:
             memory: "4Gi"
-            cpu: "1"
+            cpu: "2"
 
     ############################################################################
 

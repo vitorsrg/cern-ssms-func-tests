@@ -67,8 +67,7 @@ if ! util::eval_bool "$cluster_exists"; then
             "${cluster_labels_args[@]}" \
             --merge-labels
 
-        printf \
-            "true" \
+        printf "true" \
             > "/root/output/has_created_cluster.txt"
     else
         util::log "Cluster doesn't exist and may not create one."
@@ -80,8 +79,7 @@ if ! util::eval_bool "$cluster_exists"; then
         exit -1
     fi
 else
-    printf \
-        "false" \
+    printf "false" \
         > "/root/output/has_created_cluster.txt"
 fi
 

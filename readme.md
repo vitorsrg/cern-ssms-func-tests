@@ -56,7 +56,7 @@ openstack coe cluster config vsantaro-func-tests --force
 kubectl cluster-info
 
 kubectl apply \
-    -f https://raw.githubusercontent.com/argoproj/argo-workflows/master/manifests/quick-start-postgres.yaml
+    -f https://raw.githubusercontent.com/argoproj/argo-workflows/v3.3.9/manifests/quick-start-postgres.yaml
 
 
 
