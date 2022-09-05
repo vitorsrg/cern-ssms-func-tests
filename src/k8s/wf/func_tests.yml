@@ -363,7 +363,7 @@ spec:
                 - name: may_delete_cluster
                   value: "{{workflow.parameters.may_delete_cluster}}"
                 - name: has_created_cluster
-                  value: "{{steps['create-cluster'].outputs.has_created_cluster}}"
+                  value: "{{tasks.create-cluster.outputs.parameters.has_created_cluster}}"
                 - name: should_delete_existing_cluster
                   value: "{{workflow.parameters.should_delete_existing_cluster}}"
 
@@ -441,9 +441,9 @@ spec:
           - name: func-tests
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
-        command: [/bin/bash]
+        command: [/opt/conda/bin/python]
         args:
-          - "{{inputs.parameters.source_path}}/src/script/workflow/process_input.sh"
+          - "{{inputs.parameters.source_path}}/src/script/workflow/process_input.py"
         env:
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
