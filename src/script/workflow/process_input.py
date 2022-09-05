@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 
 ################################################################################
-#i  Wait until 
+#i  Process workflow input so it can be used by the tasks.
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/workflow/process_input.sh"
+#ii     python "./src/script/workflow/process_input.py"
 #ii
 #ii Inputs:
 #ii     env     source_path
 #ii     env     test_names
-#ii     env     max_test_count
 ################################################################################
 
 
+import json
 import os
 import re
 import sys
-import trace
 
-from typing import Any, Callable, List
+from functools import partial
+from typing import Any, Callable, Dict, List
 
 
 def pipe(data: Any, *funcs: Callable[..., Any]) -> Any:
@@ -44,24 +44,19 @@ def main() -> None:
         lambda _: _.strip(),
         lambda _: re.split(" ", _),
     )
-    max_test_count: int = int(os.environ["max_test_count"])
 
-    for i in range(min(len(test_names), max_test_count)):
-        print(
-            test_names[i],
-            file=open(f"/root/output/test_name_{i+1:02d}.txt", "w"),
-        )
+    tests: List[Dict[str, str]] = pipe(
+        test_names,
+        enumerate,
+        partial(
+            map,
+            lambda i_n: {"test_key": i_n[0] + 1, "test_name": i_n[1]}),
+        list,
+    )
 
-    for i in range(min(len(test_names), max_test_count), max_test_count):
-        print(
-            "null",
-            file=open(f"/root/output/test_name_{i+1:02d}.txt", "w"),
-        )
+    print(
+        json.dumps(tests),
+            file=open(f"/root/output/tests.txt", "w"))
 
 if __name__ == "__main__":
-    tracer = trace.Trace(
-        count=0,
-        trace=1,
-        ignoredirs=[sys.prefix, sys.exec_prefix])
-
-    tracer.run("main()")
+    main()

@@ -180,12 +180,11 @@ spec:
 
           ######################################################################
 
-          - name: exec-test-01
+          - name: exec-test
             template: exec-test
+            withParam: "{{tasks.process-input.outputs.parameters.tests}}"
             depends: |
               copy-source.Succeeded
-            when: |
-              '{{step.process-input.outputs.test_name_01}}' != 'null'
             arguments:
               parameters:
                 - name: run_suffix
@@ -197,101 +196,9 @@ spec:
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: test_name
-                  value: "{{tasks.process-input.outputs.parameters.test_name_01}}"
+                  value: "{{item.test_name}}"
                 - name: test_key
-                  value: "01"
-
-          ######################################################################
-
-          - name: exec-test-02
-            template: exec-test
-            depends: |
-              copy-source.Succeeded
-            when: |
-              '{{step.process-input.outputs.test_name_02}}' != 'null'
-            arguments:
-              parameters:
-                - name: run_suffix
-                  value: "{{workflow.parameters.run_suffix}}"
-                - name: openstack_token
-                  value: "{{workflow.parameters.openstack_token}}"
-                - name: source_path
-                  value: "{{workflow.parameters.source_path}}"
-                - name: cluster_name
-                  value: "{{workflow.parameters.cluster_name}}"
-                - name: test_name
-                  value: "{{tasks.process-input.outputs.parameters.test_name_02}}"
-                - name: test_key
-                  value: "02"
-
-          ######################################################################
-
-          - name: exec-test-03
-            template: exec-test
-            depends: |
-              copy-source.Succeeded
-            when: |
-              '{{step.process-input.outputs.test_name_03}}' != 'null'
-            arguments:
-              parameters:
-                - name: run_suffix
-                  value: "{{workflow.parameters.run_suffix}}"
-                - name: openstack_token
-                  value: "{{workflow.parameters.openstack_token}}"
-                - name: source_path
-                  value: "{{workflow.parameters.source_path}}"
-                - name: cluster_name
-                  value: "{{workflow.parameters.cluster_name}}"
-                - name: test_name
-                  value: "{{tasks.process-input.outputs.parameters.test_name_03}}"
-                - name: test_key
-                  value: "03"
-
-          ######################################################################
-
-          - name: exec-test-04
-            template: exec-test
-            depends: |
-              copy-source.Succeeded
-            when: |
-              '{{step.process-input.outputs.test_name_04}}' != 'null'
-            arguments:
-              parameters:
-                - name: run_suffix
-                  value: "{{workflow.parameters.run_suffix}}"
-                - name: openstack_token
-                  value: "{{workflow.parameters.openstack_token}}"
-                - name: source_path
-                  value: "{{workflow.parameters.source_path}}"
-                - name: cluster_name
-                  value: "{{workflow.parameters.cluster_name}}"
-                - name: test_name
-                  value: "{{tasks.process-input.outputs.parameters.test_name_04}}"
-                - name: test_key
-                  value: "04"
-
-          ######################################################################
-
-          - name: exec-test-05
-            template: exec-test
-            depends: |
-              copy-source.Succeeded
-            when: |
-              '{{step.process-input.outputs.test_name_05}}' != 'null'
-            arguments:
-              parameters:
-                - name: run_suffix
-                  value: "{{workflow.parameters.run_suffix}}"
-                - name: openstack_token
-                  value: "{{workflow.parameters.openstack_token}}"
-                - name: source_path
-                  value: "{{workflow.parameters.source_path}}"
-                - name: cluster_name
-                  value: "{{workflow.parameters.cluster_name}}"
-                - name: test_name
-                  value: "{{tasks.process-input.outputs.parameters.test_name_05}}"
-                - name: test_key
-                  value: "05"
+                  value: "{{item.test_key}}"
 
           ######################################################################
 
@@ -300,36 +207,10 @@ spec:
             depends: |
               copy-source.Failed
               || (
-                (
-                  exec-test-01.Succeeded
-                  || exec-test-01.Failed
-                  || exec-test-01.Errored
-                  || exec-test-01.Skipped
-                )
-                && (
-                  exec-test-02.Succeeded
-                  || exec-test-02.Failed
-                  || exec-test-02.Errored
-                  || exec-test-02.Skipped
-                )
-                && (
-                  exec-test-03.Succeeded
-                  || exec-test-03.Failed
-                  || exec-test-03.Errored
-                  || exec-test-03.Skipped
-                )
-                && (
-                  exec-test-04.Succeeded
-                  || exec-test-04.Failed
-                  || exec-test-04.Errored
-                  || exec-test-04.Skipped
-                )
-                && (
-                  exec-test-05.Succeeded
-                  || exec-test-05.Failed
-                  || exec-test-05.Errored
-                  || exec-test-05.Skipped
-                )
+                exec-test.Succeeded
+                || exec-test.Failed
+                || exec-test.Errored
+                || exec-test.Skipped
               )
             arguments:
               parameters:
@@ -420,21 +301,9 @@ spec:
           - name: source_path
       outputs:
         parameters:
-          - name: test_name_01
+          - name: tests
             valueFrom:
-              path: /root/output/test_name_01.txt
-          - name: test_name_02
-            valueFrom:
-              path: /root/output/test_name_02.txt
-          - name: test_name_03
-            valueFrom:
-              path: /root/output/test_name_03.txt
-          - name: test_name_04
-            valueFrom:
-              path: /root/output/test_name_04.txt
-          - name: test_name_05
-            valueFrom:
-              path: /root/output/test_name_05.txt
+              path: /root/output/tests.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:

@@ -58,7 +58,8 @@ kubectl cluster-info
 kubectl apply \
     -f https://raw.githubusercontent.com/argoproj/argo-workflows/v3.3.9/manifests/quick-start-postgres.yaml
 
-
+kubectl create \
+    -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.59.0/bundle.yaml
 
 sshfs "vsantaro@$lxplus8_host:/afs/cern.ch/user/v/vsantaro/" "./lxplus8_home/"
 umount -f "./lxplus8_home/"
