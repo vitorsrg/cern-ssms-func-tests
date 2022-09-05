@@ -14,9 +14,6 @@ manage::main () {
     "remount" )
         manage::remount
     ;;
-    "serve_argo" )
-        manage::serve_argo
-    ;;
     * )
         printf "Unknown command\n"
         exit -1
@@ -29,14 +26,6 @@ manage::remount () {
     umount -f "./lxplus8_home/" || true
     mkdir -p "./lxplus8_home/"
     sshfs "vsantaro@$(cat lxplus8_host.txt):./" "./lxplus8_home/"
-}
-
-manage::serve_argo () {
-    set -x
-
-    export KUBECONFIG="$(pwd)/secrets/kubeconfig.yml"
-
-    kubectl -n argo port-forward deployment/argo-server 2746:2746
 }
 
 manage::dispatch_job () {

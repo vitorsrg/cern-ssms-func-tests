@@ -44,7 +44,6 @@ kubectl apply \
 
 ./argo.bin \
     submit \
-    -n argo \
     <(
         yq -Y \
             ".metadata.name += \"$run_suffix\"" \
@@ -57,7 +56,6 @@ kubectl apply \
     "$@"
 
 kubectl get wf \
-    -n argo \
     "func-tests$run_suffix" \
     -o json \
     | jq -jr \

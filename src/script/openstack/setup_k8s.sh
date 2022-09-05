@@ -4,9 +4,9 @@
 #i  Save kubeconfig to file.
 #ii
 #ii Example:
-#ii     bash "./src/openstack/setup_k8s.sh" \
-#ii         "cluster_name" \
-#ii         "kubeconfig.yml"
+#ii     bash "./src/script/openstack/setup_k8s.sh" \
+#ii         "vsantaro-func-tests" \
+#ii         "./secrets/kubeconfig.yml"
 #ii
 #u  Usage:
 #u      setup_k8s <cluster_name> <kubeconfig_path>
