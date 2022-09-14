@@ -88,6 +88,8 @@ spec:
       configMap:
         name: func-tests-src
         items: []
+    - name: func-tests-src-2
+      emptyDir: {}
 
   ##############################################################################
 
@@ -104,6 +106,10 @@ spec:
             template: process-input
             arguments:
               parameters:
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: test_names
@@ -244,6 +250,8 @@ spec:
     - name: process-input
       inputs:
         parameters:
+          - name: gitlab_token
+          - name: gitlab_url
           - name: test_names
           - name: max_test_count
           - name: source_path
@@ -255,9 +263,8 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests-src
+          - name: func-tests-src-2
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/opt/conda/bin/python]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/process_input.py"
@@ -275,6 +282,32 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - &init_clone_repo
+          name: clone-source
+          image: registry.cern.ch/vsantaro/func-tests
+          command: [/bin/bash]
+          args:
+            - -c
+            - |
+              #!/bin/bash
+
+              set -ex
+
+              git clone \
+                "https://oauth2:${gitlab_token}@${gitlab_url}" \
+                --branch vitorsrg \
+                --single-branch \
+                --depth 1 \
+                ${source_path}
+          env:
+            - name: gitlab_token
+              value: "{{inputs.parameters.gitlab_token}}"
+            - name: gitlab_url
+              value: "{{inputs.parameters.gitlab_url}}"
+            - name: source_path
+              value: "{{inputs.parameters.source_path}}"
+          mirrorVolumeMounts: true
 
     ############################################################################
 

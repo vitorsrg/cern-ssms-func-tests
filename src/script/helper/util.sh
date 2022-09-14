@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-if [ -n "$_script__util__guard" ]; then return; fi
-_script__util__guard=$(date)
+if [ -n "$_script__helper__util__guard" ]; then return; fi
+_script__helper__util__guard=$(date)
 
 
 if [[ $OSTYPE == 'darwin'* ]]; then

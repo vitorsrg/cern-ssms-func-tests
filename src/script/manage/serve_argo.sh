@@ -15,7 +15,7 @@
 
 set -ex
 
-source "./src/script/util.sh"
+source "./src/script/helper/util.sh"
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 

@@ -17,7 +17,7 @@
 
 set -ex
 
-source "./src/script/util.sh"
+source "./src/script/helper/util.sh"
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 
@@ -75,7 +75,7 @@ kubectl apply \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
     -p "test_name=k8s-eos" \
-    -p "test_names=k8s_eos always_succeeds,always_fails" \
+    -p "test_names=always_fails" \
     -p "run_suffix=$run_suffix" \
     "$@"
 

@@ -18,7 +18,7 @@ pwd
 
 cd "$source_path"
 
-source "./src/script/util.sh"
+source "./src/script/helper/util.sh"
 source "./src/script/openstack/setup_token.sh" \
     "$openstack_token"
 
