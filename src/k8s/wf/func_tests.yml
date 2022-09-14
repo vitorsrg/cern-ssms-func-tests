@@ -83,6 +83,12 @@ spec:
           requests:
             storage: 1Gi
 
+  volumes:
+    - name: func-tests-src
+      configMap:
+        name: func-tests-src
+        items: []
+
   ##############################################################################
 
   templates:
@@ -94,23 +100,8 @@ spec:
 
           ######################################################################
 
-          - name: fetch-source
-            template: fetch-source
-            arguments:
-              parameters:
-                - name: gitlab_token
-                  value: "{{workflow.parameters.gitlab_token}}"
-                - name: gitlab_url
-                  value: "{{workflow.parameters.gitlab_url}}"
-                - name: source_path
-                  value: "{{workflow.parameters.source_path}}"
-
-          ######################################################################
-
           - name: process-input
             template: process-input
-            depends: |
-              fetch-source.Succeeded
             arguments:
               parameters:
                 - name: source_path
@@ -124,8 +115,6 @@ spec:
 
           - name: create-cluster
             template: create-cluster
-            depends: |
-              fetch-source.Succeeded
             arguments:
               parameters:
                 - name: openstack_token
@@ -252,47 +241,6 @@ spec:
 
     ############################################################################
 
-    - name: fetch-source
-      inputs:
-        parameters:
-          - name: gitlab_token
-          - name: gitlab_url
-          - name: source_path
-      script:
-        image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests
-            mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: false
-        command: [/bin/bash]
-        env:
-          - name: gitlab_token
-            value: "{{inputs.parameters.gitlab_token}}"
-          - name: gitlab_url
-            value: "{{inputs.parameters.gitlab_url}}"
-          - name: source_path
-            value: "{{inputs.parameters.source_path}}"
-        source: |
-          #!/bin/bash
-
-          set -ex
-
-          git clone \
-            "https://oauth2:${gitlab_token}@${gitlab_url}" \
-            --branch vitorsrg \
-            --single-branch \
-            --depth 1 \
-            ${source_path}
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "4Gi"
-            cpu: "1"
-
-    ############################################################################
-
     - name: process-input
       inputs:
         parameters:
@@ -307,7 +255,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/opt/conda/bin/python]
@@ -352,7 +300,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]
@@ -394,7 +342,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]
@@ -427,7 +375,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]
@@ -469,7 +417,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]
@@ -508,7 +456,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]
@@ -550,7 +498,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
             readOnly: true
         command: [/bin/bash]

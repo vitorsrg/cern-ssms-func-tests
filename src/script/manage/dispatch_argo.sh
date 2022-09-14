@@ -39,15 +39,38 @@ git push gitlab HEAD:vitorsrg
 
 ################################################################################
 
+bash "./src/script/manage/render_src_cm.sh"
+
+cat "./data/func_tests_src.yml" \
+    | yq -Y \
+        ".metadata.name += \"$run_suffix\"" \
+    | kubectl apply \
+        -f -
+
+################################################################################
+
 kubectl apply \
     -f "./src/k8s/sc/manila_ephemeral.yml"
 
 ./argo.bin \
     submit \
     <(
-        yq -Y \
-            ".metadata.name += \"$run_suffix\"" \
-            "./src/k8s/wf/func_tests.yml"
+        cat "./src/k8s/wf/func_tests.yml" \
+            | yq -Y \
+                ".metadata.name += \"$run_suffix\"" \
+            | yq -Y \
+                "(
+                    .spec.volumes[]
+                    | select(.name == \"func-tests-src\")
+                    | .configMap.items
+                ) = input.configMap.items" \
+                - \
+                <(yq "." "./data/func_tests_mount.yml") \
+            | yq -Y \
+                "(
+                    .. .configMap?.name? // empty
+                    | select(. == \"func-tests-src\")
+                ) += \"$run_suffix\"" \
     ) \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \
@@ -99,3 +122,11 @@ kubectl get wf \
         | map(select(.test_key != null))
         | sort_by(.test_key)
         '
+
+################################################################################
+
+kubectl delete cm \
+    "func-tests-src$run_suffix" \
+    --force \
+    --timeout=60s \
+    || true

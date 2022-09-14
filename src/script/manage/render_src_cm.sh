@@ -14,9 +14,11 @@
 #ii     file    "./data/func_tests_src.yml"
 ################################################################################
 
-set -ex
+set -e
 
 source "./src/script/util.sh"
+
+set -v
 
 ################################################################################
 
@@ -27,8 +29,9 @@ cp -f \
 git ls-tree \
     -r HEAD --name-only \
     | while read relpath; do
+    relpath_escaped="${relpath//\//__}"
     yq -Y \
-        --arg key "$relpath" \
+        --arg key "$relpath_escaped" \
         --arg val "$(cat $relpath)" \
         ".data[\$key] = \$val" \
         "./data/func_tests_src.yml" \
@@ -48,9 +51,11 @@ cp -f \
 git ls-tree \
     -r HEAD --name-only \
     | while read relpath; do
+    relpath_escaped="${relpath//\//__}"
     yq -Y \
         --arg relpath "$relpath" \
-        ".configMap.items |= . + [{\"key\": \$relpath, \"path\": \$relpath}]" \
+        --arg relpath_escaped "$relpath_escaped" \
+        ".configMap.items |= . + [{\"key\": \$relpath_escaped, \"path\": \$relpath}]" \
         "./data/func_tests_mount.yml" \
         > "./data/func_tests_mount.yml.tmp"
     mv -f \
