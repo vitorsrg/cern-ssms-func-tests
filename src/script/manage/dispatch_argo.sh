@@ -52,20 +52,20 @@ cat "./data/func_tests_src.yml" \
 kubectl apply \
     -f "./src/k8s/sc/manila_ephemeral.yml"
 
+            # | yq -Y \
+            #     "(
+            #         .spec.volumes[]
+            #         | select(.name == \"func-tests-src\")
+            #         | .configMap.items
+            #     ) = input.configMap.items" \
+            #     - \
+            #     <(yq "." "./data/func_tests_mount.yml") \
 ./argo.bin \
     submit \
     <(
         cat "./src/k8s/wf/func_tests.yml" \
             | yq -Y \
                 ".metadata.name += \"$run_suffix\"" \
-            | yq -Y \
-                "(
-                    .spec.volumes[]
-                    | select(.name == \"func-tests-src\")
-                    | .configMap.items
-                ) = input.configMap.items" \
-                - \
-                <(yq "." "./data/func_tests_mount.yml") \
             | yq -Y \
                 "(
                     .. .configMap?.name? // empty

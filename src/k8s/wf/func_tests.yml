@@ -85,10 +85,6 @@ spec:
 
   volumes:
     - name: func-tests-src
-      configMap:
-        name: func-tests-src
-        items: []
-    - name: func-tests-src-2
       emptyDir: {}
 
   ##############################################################################
@@ -125,6 +121,10 @@ spec:
               parameters:
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -150,6 +150,10 @@ spec:
               parameters:
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -168,6 +172,10 @@ spec:
                   value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -186,6 +194,10 @@ spec:
                   value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -213,6 +225,10 @@ spec:
                   value: "{{workflow.parameters.run_suffix}}"
                 - name: openstack_token
                   value: "{{workflow.parameters.openstack_token}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -234,6 +250,10 @@ spec:
                   value: "{{workflow.parameters.openstack_token}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
+                - name: gitlab_token
+                  value: "{{workflow.parameters.gitlab_token}}"
+                - name: gitlab_url
+                  value: "{{workflow.parameters.gitlab_url}}"
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: may_delete_cluster
@@ -263,7 +283,7 @@ spec:
       container:
         image: registry.cern.ch/vsantaro/func-tests
         volumeMounts:
-          - name: func-tests-src-2
+          - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
         command: [/opt/conda/bin/python]
         args:
@@ -285,6 +305,7 @@ spec:
       initContainers:
         - &init_clone_repo
           name: clone-source
+          # TODO: find lighter image
           image: registry.cern.ch/vsantaro/func-tests
           command: [/bin/bash]
           args:
@@ -315,6 +336,8 @@ spec:
       inputs:
         parameters:
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
           - name: cluster_template
@@ -335,7 +358,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/create_cluster.sh"
@@ -363,6 +385,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -370,6 +394,8 @@ spec:
       inputs:
         parameters:
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
       container:
@@ -377,7 +403,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/wait_cluster_ready.sh"
@@ -395,6 +420,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -403,6 +430,8 @@ spec:
         parameters:
           - name: run_suffix
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
       container:
@@ -410,7 +439,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/copy_source.sh"
@@ -430,6 +458,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "2"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -438,6 +468,8 @@ spec:
         parameters:
           - name: run_suffix
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
           - name: test_name
@@ -452,7 +484,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/exec_test.sh"
@@ -476,6 +507,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -484,6 +517,8 @@ spec:
         parameters:
           - name: run_suffix
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
       container:
@@ -491,7 +526,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/clean_source.sh"
@@ -511,6 +545,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -518,6 +554,8 @@ spec:
       inputs:
         parameters:
           - name: openstack_token
+          - name: gitlab_token
+          - name: gitlab_url
           - name: source_path
           - name: cluster_name
           - name: may_delete_cluster
@@ -533,7 +571,6 @@ spec:
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
-            readOnly: true
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/script/workflow/delete_cluster.sh"
@@ -557,3 +594,5 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+      initContainers:
+        - *init_clone_repo
