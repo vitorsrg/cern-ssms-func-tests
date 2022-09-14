@@ -22,6 +22,9 @@
         --ignore-installed
     ```
 
+https://argoproj.github.io/argo-workflows/workflow-concepts/
+https://gitlab.cern.ch/kubernetes/testing/functional
+
 1. Setup ssh
 
     ```sh
