@@ -33,8 +33,8 @@ kubectl config set-context \
 
 ################################################################################
 
-kubectl delete cm \
-    "func-tests-src$run_suffix" \
-    --force \
-    --timeout=60s \
-    || true
+# kubectl delete cm \
+#     "func-tests-src$run_suffix" \
+#     --force \
+#     --timeout=60s \
+#     || true

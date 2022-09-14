@@ -39,27 +39,6 @@ git push gitlab HEAD:vitorsrg
 
 ################################################################################
 
-bash "./src/script/manage/render_src_cm.sh"
-
-cat "./data/func_tests_src.yml" \
-    | yq -Y \
-        ".metadata.name += \"$run_suffix\"" \
-    | kubectl apply \
-        -f -
-
-################################################################################
-
-kubectl apply \
-    -f "./src/k8s/sc/manila_ephemeral.yml"
-
-            # | yq -Y \
-            #     "(
-            #         .spec.volumes[]
-            #         | select(.name == \"func-tests-src\")
-            #         | .configMap.items
-            #     ) = input.configMap.items" \
-            #     - \
-            #     <(yq "." "./data/func_tests_mount.yml") \
 ./argo.bin \
     submit \
     <(
@@ -122,11 +101,3 @@ kubectl get wf \
         | map(select(.test_key != null))
         | sort_by(.test_key)
         '
-
-################################################################################
-
-kubectl delete cm \
-    "func-tests-src$run_suffix" \
-    --force \
-    --timeout=60s \
-    || true

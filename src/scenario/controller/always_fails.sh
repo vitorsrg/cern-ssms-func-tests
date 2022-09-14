@@ -5,6 +5,8 @@
 #ii
 #ii Inputs:
 #ii     env     run_suffix
+#ii     env     gitlab_token
+#ii     env     gitlab_url
 #ii     env     source_path
 #ii     env     test_prefix
 ################################################################################
@@ -33,9 +35,17 @@ cat "./src/scenario/k8s/always_fails.yml" \
             | select(. == \"func-tests-src\")
         ) += \"$run_suffix\"" \
     | k8s::render_var \
+        "gitlab_token" \
+        "$gitlab_token" \
+        - \
+    | k8s::render_var \
+        "gitlab_url" \
+        "$gitlab_url" \
+        - \
+    | k8s::render_var \
         "source_path" \
         "$source_path" \
-        -
+        - \
     | kubectl apply \
         -f -
 

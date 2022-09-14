@@ -47,8 +47,10 @@ mkdir -p "/root/output/"
 
 ################################################################################
 
-bash "./src/scenario/controller/$test_name.sh"
-exit_code="$!"
+exit_code=$(
+    util::status \
+        bash "./src/scenario/controller/$test_name.sh"
+)
 
 ################################################################################
 

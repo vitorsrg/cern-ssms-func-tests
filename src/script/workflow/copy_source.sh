@@ -32,8 +32,8 @@ kubectl config set-context \
 
 ################################################################################
 
-cat "./data/func_tests_src.yml" \
-    | yq -Y \
-        ".metadata.name += \"$run_suffix\"" \
-    | kubectl apply \
-        -f -
+# cat "./data/func_tests_src.yml" \
+#     | yq -Y \
+#         ".metadata.name += \"$run_suffix\"" \
+#     | kubectl apply \
+#         -f -

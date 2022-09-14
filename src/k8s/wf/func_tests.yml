@@ -71,18 +71,6 @@ spec:
   volumeClaimGC:
     strategy: OnWorkflowCompletion
 
-  volumeClaimTemplates:
-    - metadata:
-        name: func-tests
-      spec:
-        accessModes:
-          - ReadWriteMany
-          - ReadWriteOnce
-        storageClassName: manila-ephemeral
-        resources:
-          requests:
-            storage: 1Gi
-
   volumes:
     - name: func-tests-src
       emptyDir: {}

@@ -27,8 +27,31 @@ spec:
         - name: func-tests-src
           mountPath: "!ch.cern{source_path}"
           readOnly: true
+  initContainers:
+    - name: clone-source
+      image: registry.cern.ch/vsantaro/func-tests
+      command: [/bin/bash]
+      args:
+        - -c
+        - |
+          #!/bin/bash
+
+          set -ex
+
+          git clone \
+            "https://oauth2:${gitlab_token}@${gitlab_url}" \
+            --branch vitorsrg \
+            --single-branch \
+            --depth 1 \
+            ${source_path}
+      env:
+        - name: gitlab_token
+          value: "!ch.cern{gitlab_token}"
+        - name: gitlab_url
+          value: "!ch.cern{gitlab_url}"
+        - name: source_path
+          value: "!ch.cern{source_path}"
+      mirrorVolumeMounts: true
   volumes:
     - name: func-tests-src
-      configMap:
-        name: func-tests-src
-        items: []
+      emptyDir: {}
