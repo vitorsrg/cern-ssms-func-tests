@@ -19,7 +19,7 @@ spec:
         - /mnt/func-tests-src/src/script/test/k8s_eos.sh
       env:
         - name: source_path
-          value: "{{workflow.parameters.source_path}}"
+          value: /mnt/func-tests-src
       resources:
         requests:
           memory: "1Gi"
@@ -36,8 +36,9 @@ spec:
           mountPropagation: HostToContainer
   volumes:
     - name: func-tests-src
-      persistentVolumeClaim:
-        claimName: func-tests-src
+      configMap:
+        name: func-tests-src
+        items: []
     - name: eos
       hostPath:
         path: /var/eos

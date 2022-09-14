@@ -18,6 +18,38 @@ set -e
 
 source "./src/script/util.sh"
 
+################################################################################
+
+function append_file_to_cm_data () {
+    relpath="$1"
+    relpath_escaped="${relpath//\//__}"
+    yq -Y \
+        --arg key "$relpath_escaped" \
+        --arg val "$(cat $relpath)" \
+        ".data[\$key] = \$val" \
+        "./data/func_tests_src.yml" \
+        > "./data/func_tests_src.yml.tmp"
+    mv -f \
+        "./data/func_tests_src.yml.tmp" \
+        "./data/func_tests_src.yml"
+}
+
+function append_file_to_cm_items () {
+    relpath="$1"
+    relpath_escaped="${relpath//\//__}"
+    yq -Y \
+        --arg relpath "$relpath" \
+        --arg relpath_escaped "$relpath_escaped" \
+        ".configMap.items |= . + [{\"key\": \$relpath_escaped, \"path\": \$relpath}]" \
+        "./data/func_tests_mount.yml" \
+        > "./data/func_tests_mount.yml.tmp"
+    mv -f \
+        "./data/func_tests_mount.yml.tmp" \
+        "./data/func_tests_mount.yml"
+}
+
+################################################################################
+
 set -v
 
 ################################################################################
@@ -29,20 +61,10 @@ cp -f \
 git ls-tree \
     -r HEAD --name-only \
     | while read relpath; do
-    relpath_escaped="${relpath//\//__}"
-    yq -Y \
-        --arg key "$relpath_escaped" \
-        --arg val "$(cat $relpath)" \
-        ".data[\$key] = \$val" \
-        "./data/func_tests_src.yml" \
-        > "./data/func_tests_src.yml.tmp"
-    mv -f \
-        "./data/func_tests_src.yml.tmp" \
-        "./data/func_tests_src.yml"
+    append_file_to_cm_data "$relpath"
 done
 
 ################################################################################
-
 
 cp -f \
     "./src/k8s/cm/func_tests_mount.yml" \
@@ -51,14 +73,13 @@ cp -f \
 git ls-tree \
     -r HEAD --name-only \
     | while read relpath; do
-    relpath_escaped="${relpath//\//__}"
-    yq -Y \
-        --arg relpath "$relpath" \
-        --arg relpath_escaped "$relpath_escaped" \
-        ".configMap.items |= . + [{\"key\": \$relpath_escaped, \"path\": \$relpath}]" \
-        "./data/func_tests_mount.yml" \
-        > "./data/func_tests_mount.yml.tmp"
-    mv -f \
-        "./data/func_tests_mount.yml.tmp" \
-        "./data/func_tests_mount.yml"
+    append_file_to_cm_items "$relpath"
 done
+
+################################################################################
+
+append_file_to_cm_data "./data/func_tests_src.yml"
+append_file_to_cm_data "./data/func_tests_mount.yml"
+
+append_file_to_cm_items "./data/func_tests_src.yml"
+append_file_to_cm_items "./data/func_tests_mount.yml"

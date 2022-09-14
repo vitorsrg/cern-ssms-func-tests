@@ -15,7 +15,7 @@ spec:
         - /mnt/func-tests-src/src/script/test/always_succeeds.sh
       env:
         - name: source_path
-          value: "{{workflow.parameters.source_path}}"
+          value: /mnt/func-tests-src
       resources:
         requests:
           memory: "1Gi"
@@ -29,5 +29,6 @@ spec:
           readOnly: true
   volumes:
     - name: func-tests-src
-      persistentVolumeClaim:
-        claimName: func-tests-src
+      configMap:
+        name: func-tests-src
+        items: []

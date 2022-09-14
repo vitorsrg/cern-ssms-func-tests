@@ -50,20 +50,23 @@ cat "./src/k8s/test/$test_name.yml" \
         ".metadata.name = \"$pod_name\"" \
     | yq -Y \
         "(
-            .. .claimName? // empty 
-            | select(. == \"func-tests-src\")
-        ) += \"$run_suffix\"" \
+            .spec.volumes[]
+            | select(.name == \"func-tests-src\")
+            | .configMap.items
+        ) = input.configMap.items" \
+        - \
+        <(yq "." "./data/func_tests_mount.yml") \
     | yq -Y \
         "(
-            .. .value? // empty 
-            | select(. == \"{{workflow.parameters.source_path}}\")
-        ) = \"$source_path\"" \
+            .. .configMap?.name? // empty
+            | select(. == \"func-tests-src\")
+        ) += \"$run_suffix\"" \
     | kubectl apply \
         -f -
 
 if ! kubectl wait pod \
     --for=condition=ready \
-    --timeout=300s \
+    --timeout=60s \
     "$pod_name"; then
     kubectl describe pod \
         "$pod_name"
