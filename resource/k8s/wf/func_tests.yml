@@ -34,7 +34,7 @@ spec:
       - name: gitlab_url
         value: gitlab.cern.ch/kubernetes/testing/functional.git
       - name: git_branch
-        value: feat/sample-func-test
+        value: vitorsrg
       ##########################################################################
       - name: source_path
         value: /mnt/func-tests-src
@@ -256,7 +256,7 @@ spec:
           image: alpine/git
           args:
             - clone
-            - "https://oauth2:{{inputs.parameters.gitlab_token}}@{{inputs.parameters.gitlab_url}}"
+            - "https://github.com/vitorsrg/cern-ssms-func-tests.git"
             - --branch
             - "{{inputs.parameters.git_branch}}"
             - --single-branch

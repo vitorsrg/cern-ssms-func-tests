@@ -38,7 +38,7 @@ run_suffix=$(
 # TODO: remove this
 git add -A
 git commit -S -a -m 'fixup' || true
-git push gitlab HEAD
+git push origin HEAD
 
 ################################################################################
 

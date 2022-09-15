@@ -3,7 +3,7 @@ name: clone-source
 image: alpine/git
 args:
   - clone
-  - "https://oauth2:{{ gitlab_token }}@{{ gitlab_url }}"
+  - "https://github.com/vitorsrg/cern-ssms-func-tests.git"
   - --branch
   - "{{ git_branch }}"
   - --single-branch
