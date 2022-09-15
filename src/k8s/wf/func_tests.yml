@@ -226,13 +226,8 @@ spec:
         command: [/opt/conda/bin/python]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/process_input.py"
-        env:
-          - name: source_path
-            value: "{{inputs.parameters.source_path}}"
-          - name: test_names
-            value: "{{inputs.parameters.test_names}}"
-          - name: max_test_count
-            value: "{{inputs.parameters.max_test_count}}"
+          - "{{inputs.parameters.source_path}}"
+          - "{{inputs.parameters.test_names}}"
         resources:
           requests:
             memory: "1Gi"

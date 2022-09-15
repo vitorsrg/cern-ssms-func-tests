@@ -12,21 +12,6 @@ source "./src/helper/util.sh"
 ################################################################################
 
 
-function k8s::render_var () {
-    key="$1"
-    value="$2"
-    input="$3"
-
-    # TODO: use perl
-    yq -Y \
-        "(
-            ..
-            | select(type == \"string\")
-        ) |= sub(\"!ch.cern{$key}\"; \"$value\")" \
-        "$input"
-}
-
-
 function k8s::wait_pod_ready () {
     pod_name="$1"
 

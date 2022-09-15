@@ -17,19 +17,9 @@ RUN apt-get update -qq -y \
 # Install openstack
 ################################################################################
 
-# RUN apt-get install -qq -y \
-#     gcc
-
-# RUN conda create -y -p /root/.conda 'python==3.10.0'
-# ENV PATH="/root/.conda/bin/:$PATH"
-
 RUN pip install \
     "python-openstackclient==5.2.0" \
     "python-magnumclient==3.0.1"
-
-# RUN apt-get autoremove -qq -y \
-#     --purge \
-#     gcc
 
 ################################################################################
 # Install kubectl
@@ -55,6 +45,7 @@ RUN apt-get install -qq -y \
     jq
 
 RUN pip install \
+    "jinja2==3.1.2" \
     "yq==3.1.0"
 
 ################################################################################

@@ -1,0 +1,23 @@
+{%- macro clone_source(gitlab_token, gitlab_url, source_path) -%}
+name: clone-source
+image: alpine/git
+args:
+  - clone
+  - "https://oauth2:{{ gitlab_token }}@{{ gitlab_url }}"
+  - --branch
+  - vitorsrg
+  - --single-branch
+  - --depth
+  - "1"
+  - "{{ source_path }}"
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1"
+  limits:
+    memory: "4Gi"
+    cpu: "2"
+volumeMounts:
+  - name: func-tests-src
+    mountPath: "{{ source_path }}"
+{%- endmacro -%}

@@ -18,21 +18,13 @@ source "./src/helper/util.sh"
 
 ################################################################################
 
-cat "./src/k8s/pod/always_succeeds.yml" \
+cat "./src/k8s/pod/always_succeeds.yml.jinja" \
+    | python "./src/manage/render.py" \
+        -D "gitlab_token" "$gitlab_token" \
+        -D "gitlab_url" "$gitlab_url" \
+        -D "source_path" "$source_path" \
     | yq -Y \
         ".metadata.name = \"$test_prefix\"" \
-    | k8s::render_var \
-        "gitlab_token" \
-        "$gitlab_token" \
-        - \
-    | k8s::render_var \
-        "gitlab_url" \
-        "$gitlab_url" \
-        - \
-    | k8s::render_var \
-        "source_path" \
-        "$source_path" \
-        - \
     | kubectl apply \
         -f -
 
