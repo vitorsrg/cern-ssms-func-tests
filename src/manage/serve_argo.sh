@@ -13,9 +13,12 @@
 #u      serve_argo
 ################################################################################
 
-set -ex
+set -ev
 
 source "./src/helper/util.sh"
+
+set +v
+set -x
 
 export KUBECONFIG="./.secrets/kubeconfig.yml"
 

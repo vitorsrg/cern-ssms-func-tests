@@ -16,7 +16,7 @@
 #ii     env     test_key
 ################################################################################
 
-set -ex
+set -ev
 pwd
 
 cd "$source_path"
@@ -27,6 +27,9 @@ source "./src/openstack/setup_token.sh" \
 source "./src/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
+
+set +v
+set -x
 
 kubectl config set-context \
     --current \

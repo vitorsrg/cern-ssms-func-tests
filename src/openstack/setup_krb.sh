@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 export OS_AUTH_URL="https://keystone.cern.ch/v3"
 export OS_REGION_NAME="cern"
 export OS_PROJECT_NAME="IT Cloud Infrastructure Developers"

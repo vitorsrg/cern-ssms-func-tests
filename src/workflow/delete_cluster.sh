@@ -19,7 +19,7 @@
 #ii     file    /root/output/has_deleted_cluster.txt
 ################################################################################
 
-set -ex
+set -ev
 pwd
 
 cd "$source_path"
@@ -28,7 +28,12 @@ source "./src/helper/util.sh"
 source "./src/openstack/setup_token.sh" \
     "$openstack_token"
 
+set +v
+set -x
+
 mkdir -p "/root/output/"
+
+################################################################################
 
 if \
     util::eval_bool "$may_delete_cluster" \

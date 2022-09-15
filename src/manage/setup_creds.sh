@@ -14,9 +14,12 @@
 #u      setup_creds
 ################################################################################
 
-set -e
+set -ev
 
 source "./src/openstack/setup_token.sh" \
     $(cat "./.secrets/openstack_token.txt")
+
+set +v
+set -x
 
 export KUBECONFIG="./.secrets/kubeconfig.yml"

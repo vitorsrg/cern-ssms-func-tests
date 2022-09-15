@@ -13,7 +13,7 @@
 #ii     env     cluster_name
 ################################################################################
 
-set -ex
+set -ev
 pwd
 
 cd "$source_path"
@@ -21,6 +21,11 @@ cd "$source_path"
 source "./src/helper/util.sh"
 source "./src/openstack/setup_token.sh" \
     "$openstack_token"
+
+set +v
+set -x
+
+################################################################################
 
 while true; do
     status=$(

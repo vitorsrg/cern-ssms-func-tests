@@ -12,7 +12,7 @@
 #u      setup_k8s <cluster_name> <kubeconfig_path>
 ################################################################################
 
-set -e
+set -ev
 
 cluster_name="$1"
 kubeconfig_path="$2"
