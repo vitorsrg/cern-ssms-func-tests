@@ -8,7 +8,6 @@
 #ii     python "./src/workflow/process_input.py"
 #ii
 #ii Inputs:
-#ii     arg     source_path
 #ii     arg     test_names
 ################################################################################
 
@@ -30,15 +29,14 @@ def pipe(data: Any, *funcs: Callable[..., Any]) -> Any:
 
 def main() -> None:
     print(sys.executable)
-
-    os.chdir(sys.argv[1])
     os.system("""pwd""")
+
     os.system("""mkdir -p "/root/output/" """)
 
     ############################################################################
 
     test_names: List[str] = pipe(
-        sys.argv[2],
+        sys.argv[1],
         lambda _: re.sub(r"[^a-z0-9_]", " ", _),
         lambda _: re.sub(r"\s+", " ", _),
         lambda _: _.strip(),
