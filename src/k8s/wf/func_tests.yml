@@ -33,6 +33,8 @@ spec:
       - name: gitlab_token
       - name: gitlab_url
         value: gitlab.cern.ch/kubernetes/testing/functional.git
+      - name: git_branch
+        value: feat/sample-func-test
       ##########################################################################
       - name: source_path
         value: /mnt/func-tests-src
@@ -54,7 +56,6 @@ spec:
         value: "true"
       - name: may_fail_if_exists
         value: "false"
-      - name: test_name
       - name: test_names
       - name: max_test_count
         value: "5"
@@ -93,6 +94,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_token}}"
                 - name: gitlab_url
                   value: "{{workflow.parameters.gitlab_url}}"
+                - name: git_branch
+                  value: "{{workflow.parameters.git_branch}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: test_names
@@ -112,6 +115,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_token}}"
                 - name: gitlab_url
                   value: "{{workflow.parameters.gitlab_url}}"
+                - name: git_branch
+                  value: "{{workflow.parameters.git_branch}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -141,6 +146,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_token}}"
                 - name: gitlab_url
                   value: "{{workflow.parameters.gitlab_url}}"
+                - name: git_branch
+                  value: "{{workflow.parameters.git_branch}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -164,6 +171,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_token}}"
                 - name: gitlab_url
                   value: "{{workflow.parameters.gitlab_url}}"
+                - name: git_branch
+                  value: "{{workflow.parameters.git_branch}}"
                 - name: source_path
                   value: "{{workflow.parameters.source_path}}"
                 - name: cluster_name
@@ -195,6 +204,8 @@ spec:
                   value: "{{workflow.parameters.gitlab_token}}"
                 - name: gitlab_url
                   value: "{{workflow.parameters.gitlab_url}}"
+                - name: git_branch
+                  value: "{{workflow.parameters.git_branch}}"
                 - name: cluster_name
                   value: "{{workflow.parameters.cluster_name}}"
                 - name: may_delete_cluster
@@ -213,6 +224,7 @@ spec:
         parameters:
           - name: gitlab_token
           - name: gitlab_url
+          - name: git_branch
           - name: test_names
           - name: max_test_count
           - name: source_path
@@ -246,7 +258,7 @@ spec:
             - clone
             - "https://oauth2:{{inputs.parameters.gitlab_token}}@{{inputs.parameters.gitlab_url}}"
             - --branch
-            - vitorsrg
+            - "{{inputs.parameters.git_branch}}"
             - --single-branch
             - --depth
             - "1"
@@ -270,6 +282,7 @@ spec:
           - name: openstack_token
           - name: gitlab_token
           - name: gitlab_url
+          - name: git_branch
           - name: source_path
           - name: cluster_name
           - name: cluster_template
@@ -297,6 +310,8 @@ spec:
             value: "{{inputs.parameters.gitlab_token}}"
           - name: gitlab_url
             value: "{{inputs.parameters.gitlab_url}}"
+          - name: git_branch
+            value: "{{inputs.parameters.git_branch}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -332,6 +347,7 @@ spec:
           - name: openstack_token
           - name: gitlab_token
           - name: gitlab_url
+          - name: git_branch
           - name: source_path
           - name: cluster_name
       container:
@@ -346,6 +362,8 @@ spec:
             value: "{{inputs.parameters.gitlab_token}}"
           - name: gitlab_url
             value: "{{inputs.parameters.gitlab_url}}"
+          - name: git_branch
+            value: "{{inputs.parameters.git_branch}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -372,6 +390,7 @@ spec:
           - name: openstack_token
           - name: gitlab_token
           - name: gitlab_url
+          - name: git_branch
           - name: source_path
           - name: cluster_name
           - name: test_name
@@ -395,6 +414,8 @@ spec:
             value: "{{inputs.parameters.gitlab_token}}"
           - name: gitlab_url
             value: "{{inputs.parameters.gitlab_url}}"
+          - name: git_branch
+            value: "{{inputs.parameters.git_branch}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -424,6 +445,7 @@ spec:
           - name: openstack_token
           - name: gitlab_token
           - name: gitlab_url
+          - name: git_branch
           - name: source_path
           - name: cluster_name
           - name: may_delete_cluster
@@ -446,6 +468,8 @@ spec:
             value: "{{inputs.parameters.gitlab_token}}"
           - name: gitlab_url
             value: "{{inputs.parameters.gitlab_url}}"
+          - name: git_branch
+            value: "{{inputs.parameters.git_branch}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name

@@ -11,7 +11,6 @@ sleep 10  # prevent pod from finishing too fast
 
 ################################################################################
 
-
 ls_output=$(ls /eos 2>&1)
 if [ $? -ne 0 ]; then
     echo "error: $ls_output"

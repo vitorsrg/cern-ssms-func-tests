@@ -1,11 +1,11 @@
-{%- macro clone_source(gitlab_token, gitlab_url, source_path) -%}
+{%- macro clone_source(gitlab_token, gitlab_url, git_branch, source_path) -%}
 name: clone-source
 image: alpine/git
 args:
   - clone
   - "https://oauth2:{{ gitlab_token }}@{{ gitlab_url }}"
   - --branch
-  - vitorsrg
+  - "{{ git_branch }}"
   - --single-branch
   - --depth
   - "1"

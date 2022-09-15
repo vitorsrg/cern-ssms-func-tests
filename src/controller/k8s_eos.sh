@@ -7,6 +7,7 @@
 #ii     env     run_suffix
 #ii     env     gitlab_token
 #ii     env     gitlab_url
+#ii     env     git_branch
 #ii     env     source_path
 #ii     env     test_prefix
 ################################################################################
@@ -22,6 +23,7 @@ cat "src/k8s/pod/k8s_eos.yml.jinja" \
     | python "./src/manage/render.py" \
         -D "gitlab_token" "$gitlab_token" \
         -D "gitlab_url" "$gitlab_url" \
+        -D "git_branch" "$git_branch" \
         -D "source_path" "$source_path" \
     | yq -Y \
         ".metadata.name = \"$test_prefix\"" \

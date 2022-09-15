@@ -19,7 +19,7 @@ source "./src/helper/util.sh"
 
 ################################################################################
 
-cat "./src/k8s/pod/always_succeeds.yml.jinja" \
+cat "src/k8s/pod/k8s_dns_ipv4.yml.jinja" \
     | python "./src/manage/render.py" \
         -D "gitlab_token" "$gitlab_token" \
         -D "gitlab_url" "$gitlab_url" \

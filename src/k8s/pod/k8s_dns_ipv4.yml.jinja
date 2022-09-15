@@ -9,15 +9,20 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: always-fails
+  name: k8s-dns-ipv4
 spec:
   restartPolicy: Never
+  activeDeadlineSeconds: 120
   containers:
     - name: main
-      image: bash:5.0.17
-      command: [/usr/local/bin/bash]
+      image: gitlab-registry.cern.ch/cloud/rally-magnum-containers/kubectl:v1.22.2
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+      - name: config-volume
+        mountPath: /tmp/script
+      command: ["/bin/bash"]
       args:
-        - "{{ source_path }}/src/scenario/always_fails.sh"
+        - "{{ source_path }}/src/scenario/k8s_dns_ipv4.sh"
       env:
         - name: source_path
           value: "{{ source_path }}"
@@ -31,6 +36,7 @@ spec:
       volumeMounts:
         - name: func-tests-src
           mountPath: "{{ source_path }}"
+          readOnly: true
   initContainers:
     - {{
           clone_source(
