@@ -7,7 +7,7 @@
 #ii     bash "./src/manage/serve_argo.sh"
 #ii
 #ii Inputs:
-#ii     file    "./secrets/kubeconfig.yml"
+#ii     file    "./.secrets/kubeconfig.yml"
 #ii
 #u  Usage:
 #u      serve_argo
@@ -17,7 +17,7 @@ set -ex
 
 source "./src/helper/util.sh"
 
-export KUBECONFIG="./secrets/kubeconfig.yml"
+export KUBECONFIG="./.secrets/kubeconfig.yml"
 
 ################################################################################
 

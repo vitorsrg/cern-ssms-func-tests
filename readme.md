@@ -35,7 +35,7 @@ https://gitlab.cern.ch/kubernetes/testing/functional
 
 ksource "./src/openstack/setup_k8s.sh" \
     "vsantaro-func-tests--test" \
-    "./secrets/kubeconfig2.yml"
+    "./.secrets/kubeconfig2.yml"
 
 ```sh
 
@@ -70,7 +70,7 @@ umount -f "./lxplus8_home/"
 ```
 
 git clone \
-    "https://oauth2:$(cat ./secrets/gitlab_token.txt)@gitlab.cern.ch/kubernetes/testing/functional.git" \
+    "https://oauth2:$(cat ./.secrets/gitlab_token.txt)@gitlab.cern.ch/kubernetes/testing/functional.git" \
     --branch vitorsrg \
     --single-branch \
     --depth 1 \
