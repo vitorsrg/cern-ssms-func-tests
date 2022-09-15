@@ -9,7 +9,6 @@
 #ii
 #ii Inputs:
 #ii     env     openstack_token
-#ii     env     source_path
 #ii     env     cluster_name
 #ii     env     cluster_template
 #ii     env     cluster_node_count
@@ -23,16 +22,12 @@
 ################################################################################
 
 set -ev
-pwd
-
-cd "$source_path"
 
 source "./lib/util.sh"
 source "./src/openstack/setup_token.sh" \
     "$openstack_token"
 
-set +v
-set -x
+set +v -x
 
 ################################################################################
 

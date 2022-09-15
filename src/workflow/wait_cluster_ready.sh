@@ -22,8 +22,7 @@ source "./lib/util.sh"
 source "./src/openstack/setup_token.sh" \
     "$openstack_token"
 
-set +v
-set -x
+set +v -x
 
 ################################################################################
 

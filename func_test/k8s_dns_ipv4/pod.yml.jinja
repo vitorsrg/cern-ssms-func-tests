@@ -17,12 +17,10 @@ spec:
     - name: main
       image: gitlab-registry.cern.ch/cloud/rally-magnum-containers/kubectl:v1.22.2
       imagePullPolicy: IfNotPresent
+      workingDir: "{{ source_path }}"
       command: ["/bin/bash"]
       args:
-        - "{{ source_path }}./func_test/k8s_dns_ipv4/main.sh"
-      env:
-        - name: source_path
-          value: "{{ source_path }}"
+        - "./func_test/k8s_dns_ipv4/main.sh"
       resources:
         requests:
           memory: "1Gi"

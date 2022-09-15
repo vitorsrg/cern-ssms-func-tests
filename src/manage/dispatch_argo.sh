@@ -19,8 +19,7 @@ set -ev
 
 source "./lib/util.sh"
 
-set +v
-set -x
+set +v -x
 
 export KUBECONFIG="./.secrets/kubeconfig.yml"
 

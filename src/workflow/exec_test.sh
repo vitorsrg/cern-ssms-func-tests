@@ -28,8 +28,7 @@ source "./src/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
 
-set +v
-set -x
+set +v -x
 
 kubectl config set-context \
     --current \

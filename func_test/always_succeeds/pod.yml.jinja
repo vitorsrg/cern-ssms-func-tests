@@ -15,9 +15,10 @@ spec:
   containers:
     - name: main
       image: bash:5.0.17
+      workingDir: "{{ source_path }}"
       command: [/usr/local/bin/bash]
       args:
-        - "{{ source_path }}./func_test/always_succeeds/main.sh"
+        - "./func_test/always_succeeds/main.sh"
       env:
         - name: source_path
           value: "{{ source_path }}"

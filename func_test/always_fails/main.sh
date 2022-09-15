@@ -14,8 +14,7 @@ cd "$source_path"
 
 source "./lib/util.sh"
 
-set +v
-set -x
+set +v -x
 
 sleep 10  # prevent pod from finishing too fast
 
