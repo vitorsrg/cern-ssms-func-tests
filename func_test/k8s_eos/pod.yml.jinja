@@ -19,13 +19,13 @@ spec:
     - name: main
       image: bash:5.0.17
       imagePullPolicy: IfNotPresent
-      workingDir: "{{ source_path }}"
+      workingDir: /mnt/func_tests/
       command: [/usr/local/bin/bash]
       args:
         - "./func_test/k8s_eos/main.sh"
       env:
         - name: source_path
-          value: "{{ source_path }}"
+          value: /mnt/func_tests/
       resources:
         requests:
           memory: "1Gi"
@@ -35,7 +35,7 @@ spec:
           cpu: "1"
       volumeMounts:
         - name: func-tests-src
-          mountPath: "{{ source_path }}"
+          mountPath: /mnt/func_tests/
           readOnly: true
         - name: eos
           mountPath: /eos

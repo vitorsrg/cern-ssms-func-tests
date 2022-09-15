@@ -17,13 +17,13 @@ spec:
     - name: main
       image: gitlab-registry.cern.ch/cloud/rally-magnum-containers/kubectl:v1.22.2
       imagePullPolicy: IfNotPresent
-      workingDir: "{{ source_path }}"
+      workingDir: /mnt/func_tests/
       command: ["/bin/bash"]
       args:
         - "./func_test/k8s_dns_ipv6/main.sh"
       env:
         - name: source_path
-          value: "{{ source_path }}"
+          value: /mnt/func_tests/
       resources:
         requests:
           memory: "1Gi"
@@ -33,7 +33,7 @@ spec:
           cpu: "1"
       volumeMounts:
         - name: func-tests-src
-          mountPath: "{{ source_path }}"
+          mountPath: /mnt/func_tests/
           readOnly: true
   initContainers:
     - {{

@@ -4,13 +4,9 @@
 #i  ...
 #ii
 #ii Inputs:
-#ii     env     source_path
 ################################################################################
 
 set -ev
-pwd
-
-cd "$source_path"
 
 source "./lib/util.sh"
 

@@ -8,7 +8,6 @@
 #ii     env     gitlab_token
 #ii     env     gitlab_url
 #ii     env     git_branch
-#ii     env     source_path
 #ii     env     test_prefix
 ################################################################################
 
@@ -26,7 +25,6 @@ cat "./func_test/always_fails/pod.yml.jinja" \
         -D "gitlab_token" "$gitlab_token" \
         -D "gitlab_url" "$gitlab_url" \
         -D "git_branch" "$git_branch" \
-        -D "source_path" "$source_path" \
     | yq -Y \
         ".metadata.name = \"$test_prefix\"" \
     | kubectl apply \
