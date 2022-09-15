@@ -20,9 +20,6 @@
 ################################################################################
 
 set -ev
-pwd
-
-cd "$source_path"
 
 source "./lib/util.sh"
 source "./src/openstack/setup_token.sh" \

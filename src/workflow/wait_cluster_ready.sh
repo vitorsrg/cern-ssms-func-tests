@@ -9,14 +9,10 @@
 #ii
 #ii Inputs:
 #ii     env     openstack_token
-#ii     env     source_path
 #ii     env     cluster_name
 ################################################################################
 
 set -ev
-pwd
-
-cd "$source_path"
 
 source "./lib/util.sh"
 source "./src/openstack/setup_token.sh" \

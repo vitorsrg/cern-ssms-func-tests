@@ -351,9 +351,10 @@ spec:
           - name: cluster_name
       container:
         image: registry.cern.ch/vsantaro/func-tests
+        workingDir: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
-          - "{{inputs.parameters.source_path}}/src/workflow/wait_cluster_ready.sh"
+          - "./src/workflow/wait_cluster_ready.sh"
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
@@ -363,8 +364,6 @@ spec:
             value: "{{inputs.parameters.gitlab_url}}"
           - name: git_branch
             value: "{{inputs.parameters.git_branch}}"
-          - name: source_path
-            value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
             value: "{{inputs.parameters.cluster_name}}"
         resources:
@@ -401,9 +400,10 @@ spec:
               path: /root/output/exit_code.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
+        workingDir: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
-          - "{{inputs.parameters.source_path}}/src/workflow/exec_test.sh"
+          - "./src/workflow/exec_test.sh"
         env:
           - name: run_suffix
             value: "{{inputs.parameters.run_suffix}}"
@@ -415,8 +415,6 @@ spec:
             value: "{{inputs.parameters.gitlab_url}}"
           - name: git_branch
             value: "{{inputs.parameters.git_branch}}"
-          - name: source_path
-            value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
             value: "{{inputs.parameters.cluster_name}}"
           - name: test_name
@@ -457,9 +455,10 @@ spec:
               path: /root/output/has_deleted_cluster.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
+        workingDir: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
-          - "{{inputs.parameters.source_path}}/src/workflow/delete_cluster.sh"
+          - "./src/workflow/delete_cluster.sh"
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
@@ -469,8 +468,6 @@ spec:
             value: "{{inputs.parameters.gitlab_url}}"
           - name: git_branch
             value: "{{inputs.parameters.git_branch}}"
-          - name: source_path
-            value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
             value: "{{inputs.parameters.cluster_name}}"
           - name: may_delete_cluster
