@@ -14,16 +14,16 @@
 
 set -ev
 
-source "./src/helper/k8s.sh"
-source "./src/helper/util.sh"
+source "./lib/k8s.sh"
+source "./lib/util.sh"
 
 set +v
 set -x
 
 ################################################################################
 
-cat "./src/k8s/pod/always_succeeds.yml.jinja" \
-    | python "./src/manage/render.py" \
+cat "./func_test/always_succeeds/pod.yml.jinja" \
+    | python "./lib/render.py" \
         -D "gitlab_token" "$gitlab_token" \
         -D "gitlab_url" "$gitlab_url" \
         -D "git_branch" "$git_branch" \

@@ -5,11 +5,11 @@
 #ii
 #ii
 #ii Example:
-#ii     python "./src/manage/render.py" \
+#ii     python "./lib/render.py" \
 #ii         -D "gitlab_token" "gitlab_token" \
 #ii         -D "gitlab_url" "gitlab_url" \
 #ii         -D "source_path" "source_path" \
-#ii         "src/k8s/pod/k8s_eos.yml.jinja"
+#ii         "./func_test/k8s_eos/pod.yml.jinja"
 ################################################################################
 
 
@@ -51,7 +51,7 @@ def _parse_args() -> argparse.ArgumentParser:
     """"""
 
     parser = argparse.ArgumentParser(
-        # prog="./src/manage/render.py",
+        # prog="./lib/render.py",
         # description="""""",
         add_help=True,
     )

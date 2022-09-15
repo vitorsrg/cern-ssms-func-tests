@@ -2,7 +2,7 @@
 #
 ################################################################################
 
-{% from "./src/k8s/tpl/clone_source.yml.jinja" import clone_source %}
+{% from "./resource/k8s/tpl/clone_source.yml.jinja" import clone_source %}
 
 ################################################################################
 
@@ -17,7 +17,7 @@ spec:
       image: bash:5.0.17
       command: [/usr/local/bin/bash]
       args:
-        - "{{ source_path }}/src/scenario/always_succeeds.sh"
+        - "{{ source_path }}./func_test/always_succeeds/main.sh"
       env:
         - name: source_path
           value: "{{ source_path }}"

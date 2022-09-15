@@ -12,7 +12,7 @@ pwd
 
 cd "$source_path"
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 
 set +v
 set -x

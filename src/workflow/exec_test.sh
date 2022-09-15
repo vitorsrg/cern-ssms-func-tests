@@ -21,7 +21,7 @@ pwd
 
 cd "$source_path"
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 source "./src/openstack/setup_token.sh" \
     "$openstack_token"
 source "./src/openstack/setup_k8s.sh" \
@@ -52,7 +52,7 @@ mkdir -p "/root/output/"
 
 exit_code=$(
     util::status \
-        bash "./src/controller/$test_name.sh"
+        bash "./func_test/$test_name/controller.sh"
 )
 
 ################################################################################

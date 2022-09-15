@@ -18,7 +18,7 @@
 
 set -e
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 
 ################################################################################
 # CERN kerberos login

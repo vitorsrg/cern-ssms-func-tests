@@ -2,7 +2,7 @@
 #
 ################################################################################
 
-{% from "./src/k8s/tpl/clone_source.yml.jinja" import clone_source %}
+{% from "./resource/k8s/tpl/clone_source.yml.jinja" import clone_source %}
 
 ################################################################################
 
@@ -19,7 +19,7 @@ spec:
       imagePullPolicy: IfNotPresent
       command: ["/bin/bash"]
       args:
-        - "{{ source_path }}/src/scenario/k8s_dns_ipv4.sh"
+        - "{{ source_path }}./func_test/k8s_dns_ipv4/main.sh"
       env:
         - name: source_path
           value: "{{ source_path }}"

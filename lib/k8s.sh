@@ -7,7 +7,7 @@
 if [ -n "$_script__helper__k8s__guard" ]; then return; fi
 _script__helper__k8s__guard=$(date)
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 
 ################################################################################
 

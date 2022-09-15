@@ -17,7 +17,7 @@
 
 set -ev
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 
 set +v
 set -x
@@ -42,10 +42,10 @@ git push gitlab HEAD
 
 ################################################################################
 
-./argo.bin \
+./bin/argo.bin \
     submit \
     <(
-        cat "./src/k8s/wf/func_tests.yml" \
+        cat "./resource/k8s/wf/func_tests.yml" \
             | yq -Y \
                 ".metadata.name += \"$run_suffix\""
     ) \

@@ -15,7 +15,7 @@
 
 set -ev
 
-source "./src/helper/util.sh"
+source "./lib/util.sh"
 
 set +v
 set -x

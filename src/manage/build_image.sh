@@ -18,7 +18,7 @@ set -ex
 docker build \
     -t "registry.cern.ch/vsantaro/func-tests" \
     --squash \
-    "src/docker/func_tests"
+    "./resource/docker/func_tests/"
 cat "./.secrets/harbor_token.txt" \
     | docker login \
         registry.cern.ch \
