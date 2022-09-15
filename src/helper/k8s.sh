@@ -4,8 +4,8 @@
 #i  ...
 ################################################################################
 
-if [ -n "$_script__helper__util__guard" ]; then return; fi
-_script__helper__util__guard=$(date)
+if [ -n "$_script__helper__k8s__guard" ]; then return; fi
+_script__helper__k8s__guard=$(date)
 
 source "./src/helper/util.sh"
 
@@ -32,10 +32,12 @@ function k8s::wait_pod_ready () {
 
     if ! kubectl wait pod \
         --for=condition=ready \
-        --timeout=60s \
+        --timeout=30s \
         "$pod_name"; then
         kubectl describe pod \
             "$pod_name"
+
+        kubectl logs "$pod_name" -c clone-source
 
         util::log "Pod took too long to start."
         return -1

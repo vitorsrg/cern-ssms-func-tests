@@ -7,12 +7,13 @@ kind: Pod
 metadata:
   name: always-fails
 spec:
+  restartPolicy: Never
   containers:
     - name: main
       image: bash:5.0.17
-      command:
-        - /usr/local/bin/bash
-        - "${source_path}/src/test/always_fails.sh"
+      command: [/usr/local/bin/bash]
+      args:
+        - "!ch.cern{source_path}/src/scenario/always_fails.sh"
       env:
         - name: source_path
           value: "!ch.cern{source_path}"
@@ -26,32 +27,21 @@ spec:
       volumeMounts:
         - name: func-tests-src
           mountPath: "!ch.cern{source_path}"
-          readOnly: true
   initContainers:
     - name: clone-source
-      image: registry.cern.ch/vsantaro/func-tests
-      command: [/bin/bash]
+      image: alpine/git
       args:
-        - -c
-        - |
-          #!/bin/bash
-
-          set -ex
-
-          git clone \
-            "https://oauth2:${gitlab_token}@${gitlab_url}" \
-            --branch vitorsrg \
-            --single-branch \
-            --depth 1 \
-            ${source_path}
-      env:
-        - name: gitlab_token
-          value: "!ch.cern{gitlab_token}"
-        - name: gitlab_url
-          value: "!ch.cern{gitlab_url}"
-        - name: source_path
-          value: "!ch.cern{source_path}"
-      mirrorVolumeMounts: true
+        - clone
+        - "https://oauth2:!ch.cern{gitlab_token}@!ch.cern{gitlab_url}"
+        - --branch
+        - vitorsrg
+        - --single-branch
+        - --depth
+        - "1"
+        - "!ch.cern{source_path}"
+      volumeMounts:
+        - name: func-tests-src
+          mountPath: "!ch.cern{source_path}"
   volumes:
     - name: func-tests-src
       emptyDir: {}

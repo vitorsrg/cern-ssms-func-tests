@@ -41,7 +41,7 @@ pod_suffix=$(
 )
 
 pod_name="test-$test_key-${test_name//_/-}$run_suffix$pod_suffix"
-test_prefix="test-$test_key-${test_name//_/-}$run_suffix"
+export test_prefix="test-$test_key-${test_name//_/-}$run_suffix"
 
 mkdir -p "/root/output/"
 

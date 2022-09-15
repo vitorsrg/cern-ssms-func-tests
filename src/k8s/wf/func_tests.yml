@@ -66,7 +66,7 @@ spec:
   ##############################################################################
 
   TTLStrategy:
-    secondsAfterCompletion: 86400  # 1 day
+    secondsAfterCompletion: 86400 # 1 day
 
   volumeClaimGC:
     strategy: OnWorkflowCompletion
@@ -83,7 +83,6 @@ spec:
     - name: main
       dag:
         tasks:
-
           ######################################################################
 
           - name: process-input
@@ -224,9 +223,6 @@ spec:
               path: /root/output/tests.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests-src
-            mountPath: "{{inputs.parameters.source_path}}"
         command: [/opt/conda/bin/python]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/process_input.py"
@@ -244,33 +240,25 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+        volumeMounts:
+          - name: func-tests-src
+            mountPath: "{{inputs.parameters.source_path}}"
       initContainers:
         - &init_clone_repo
           name: clone-source
-          # TODO: find lighter image
-          image: registry.cern.ch/vsantaro/func-tests
-          command: [/bin/bash]
+          image: alpine/git
           args:
-            - -c
-            - |
-              #!/bin/bash
-
-              set -ex
-
-              git clone \
-                "https://oauth2:${gitlab_token}@${gitlab_url}" \
-                --branch vitorsrg \
-                --single-branch \
-                --depth 1 \
-                ${source_path}
-          env:
-            - name: gitlab_token
-              value: "{{inputs.parameters.gitlab_token}}"
-            - name: gitlab_url
-              value: "{{inputs.parameters.gitlab_url}}"
-            - name: source_path
-              value: "{{inputs.parameters.source_path}}"
-          mirrorVolumeMounts: true
+            - clone
+            - "https://oauth2:{{inputs.parameters.gitlab_token}}@{{inputs.parameters.gitlab_url}}"
+            - --branch
+            - vitorsrg
+            - --single-branch
+            - --depth
+            - "1"
+            - "{{inputs.parameters.source_path}}"
+          volumeMounts:
+            - name: func-tests-src
+              mountPath: "{{inputs.parameters.source_path}}"
 
     ############################################################################
 
@@ -306,6 +294,10 @@ spec:
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
+          - name: gitlab_token
+            value: "{{inputs.parameters.gitlab_token}}"
+          - name: gitlab_url
+            value: "{{inputs.parameters.gitlab_url}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -351,6 +343,10 @@ spec:
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
+          - name: gitlab_token
+            value: "{{inputs.parameters.gitlab_token}}"
+          - name: gitlab_url
+            value: "{{inputs.parameters.gitlab_url}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -362,8 +358,6 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
-      initContainers:
-        - *init_clone_repo
 
     ############################################################################
 
@@ -396,6 +390,10 @@ spec:
             value: "{{inputs.parameters.run_suffix}}"
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
+          - name: gitlab_token
+            value: "{{inputs.parameters.gitlab_token}}"
+          - name: gitlab_url
+            value: "{{inputs.parameters.gitlab_url}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
@@ -443,6 +441,10 @@ spec:
         env:
           - name: openstack_token
             value: "{{inputs.parameters.openstack_token}}"
+          - name: gitlab_token
+            value: "{{inputs.parameters.gitlab_token}}"
+          - name: gitlab_url
+            value: "{{inputs.parameters.gitlab_url}}"
           - name: source_path
             value: "{{inputs.parameters.source_path}}"
           - name: cluster_name
