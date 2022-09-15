@@ -47,6 +47,13 @@ spec:
         - --depth
         - "1"
         - "!ch.cern{source_path}"
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "1"
+        limits:
+          memory: "4Gi"
+          cpu: "2"
       volumeMounts:
         - name: func-tests-src
           mountPath: "!ch.cern{source_path}"

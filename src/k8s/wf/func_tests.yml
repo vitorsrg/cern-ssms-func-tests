@@ -236,10 +236,10 @@ spec:
         resources:
           requests:
             memory: "1Gi"
-            cpu: "250m"
+            cpu: "1"
           limits:
             memory: "4Gi"
-            cpu: "1"
+            cpu: "2"
         volumeMounts:
           - name: func-tests-src
             mountPath: "{{inputs.parameters.source_path}}"
@@ -256,6 +256,13 @@ spec:
             - --depth
             - "1"
             - "{{inputs.parameters.source_path}}"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
           volumeMounts:
             - name: func-tests-src
               mountPath: "{{inputs.parameters.source_path}}"
@@ -285,9 +292,6 @@ spec:
               path: /root/output/has_created_cluster.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests-src
-            mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/create_cluster.sh"
@@ -319,6 +323,9 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+        volumeMounts:
+          - name: func-tests-src
+            mountPath: "{{inputs.parameters.source_path}}"
       initContainers:
         - *init_clone_repo
 
@@ -334,9 +341,6 @@ spec:
           - name: cluster_name
       container:
         image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests-src
-            mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/wait_cluster_ready.sh"
@@ -358,6 +362,11 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+        volumeMounts:
+          - name: func-tests-src
+            mountPath: "{{inputs.parameters.source_path}}"
+      initContainers:
+        - *init_clone_repo
 
     ############################################################################
 
@@ -379,9 +388,6 @@ spec:
               path: /root/output/exit_code.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests-src
-            mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/exec_test.sh"
@@ -409,6 +415,9 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+        volumeMounts:
+          - name: func-tests-src
+            mountPath: "{{inputs.parameters.source_path}}"
       initContainers:
         - *init_clone_repo
 
@@ -432,9 +441,6 @@ spec:
               path: /root/output/has_deleted_cluster.txt
       container:
         image: registry.cern.ch/vsantaro/func-tests
-        volumeMounts:
-          - name: func-tests-src
-            mountPath: "{{inputs.parameters.source_path}}"
         command: [/bin/bash]
         args:
           - "{{inputs.parameters.source_path}}/src/workflow/delete_cluster.sh"
@@ -462,6 +468,9 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "1"
+        volumeMounts:
+          - name: func-tests-src
+            mountPath: "{{inputs.parameters.source_path}}"
       initContainers:
         - *init_clone_repo
 
