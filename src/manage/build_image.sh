@@ -16,13 +16,13 @@
 set -ex
 
 docker build \
-    -t registry.cern.ch/vsantaro/func-tests \
+    -t "registry.cern.ch/vsantaro/func-tests" \
     --squash \
-    ./docker_image
-cat ./.secrets/harbor_token.txt \
+    "src/docker/func_tests"
+cat "./.secrets/harbor_token.txt" \
     | docker login \
         registry.cern.ch \
         --username vsantaro \
         --password-stdin
 docker push \
-    registry.cern.ch/vsantaro/func-tests
+    "registry.cern.ch/vsantaro/func-tests"
