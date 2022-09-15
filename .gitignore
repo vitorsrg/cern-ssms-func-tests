@@ -2,7 +2,7 @@
 
 # ad-hoc
 
-/argo.bin
+/bin/
 /.conda/
 /.secrets/
 
