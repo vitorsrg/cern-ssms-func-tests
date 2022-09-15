@@ -19,7 +19,7 @@ spec:
       imagePullPolicy: IfNotPresent
       command: ["/bin/bash"]
       args:
-        - "{{ source_path }}/src/scenario/k8s_dns_ipv4.sh"
+        - "{{ source_path }}/src/scenario/k8s_dns_ipv6.sh"
       env:
         - name: source_path
           value: "{{ source_path }}"

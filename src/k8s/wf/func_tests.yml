@@ -48,7 +48,7 @@ spec:
       - name: cluster_labels_json
         value: |
           {
-            "key1": "val1",
+            "ip_family_policy": "dual_stack",
             "key2": "x=1,\ny=2"
           }
       ##########################################################################
