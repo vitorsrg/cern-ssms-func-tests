@@ -5,7 +5,7 @@
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/workflow/wait_cluster_ready.sh"
+#ii     bash "./src/workflow/wait_cluster_ready.sh"
 #ii
 #ii Inputs:
 #ii     env     openstack_token
@@ -18,8 +18,8 @@ pwd
 
 cd "$source_path"
 
-source "./src/script/helper/util.sh"
-source "./src/script/openstack/setup_token.sh" \
+source "./src/helper/util.sh"
+source "./src/openstack/setup_token.sh" \
     "$openstack_token"
 
 while true; do

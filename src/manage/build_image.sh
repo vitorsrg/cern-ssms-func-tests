@@ -4,7 +4,7 @@
 #i  Build and push func-tests image.
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/cern_login.sh"
+#ii     bash "./src/manage/cern_login.sh"
 #ii
 #ii Inputs:
 #ii     file    ./secrets/harbor_token.txt

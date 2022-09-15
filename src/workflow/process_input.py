@@ -5,7 +5,7 @@
 #ii
 #ii
 #ii Example:
-#ii     python "./src/script/workflow/process_input.py"
+#ii     python "./src/workflow/process_input.py"
 #ii
 #ii Inputs:
 #ii     env     source_path

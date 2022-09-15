@@ -4,7 +4,7 @@
 #i  Login to CERN lxplus8.
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/cern_login.sh"
+#ii     bash "./src/manage/cern_login.sh"
 #ii
 #ii Inputs:
 #ii     stdin   CERN SSO vsantaro password
@@ -18,7 +18,7 @@
 
 set -e
 
-source "./src/script/helper/util.sh"
+source "./src/helper/util.sh"
 
 ################################################################################
 # CERN kerberos login
@@ -67,11 +67,11 @@ ssh \
     | jq -jr '.id' \
     > "./secrets/openstack_token.txt"
 
-# source "./src/script/openstack/setup_krb.sh"
-source "./src/script/openstack/setup_token.sh" \
+# source "./src/openstack/setup_krb.sh"
+source "./src/openstack/setup_token.sh" \
     $(cat "./secrets/openstack_token.txt")
 
-bash "./src/script/openstack/setup_k8s.sh" \
+bash "./src/openstack/setup_k8s.sh" \
     "vsantaro-func-tests" \
     "./secrets/kubeconfig.yml"
 

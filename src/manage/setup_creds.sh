@@ -4,7 +4,7 @@
 #i  Configure OpenStack and Kubernetes local env.
 #ii
 #ii Example:
-#ii     source "./src/script/manage/setup_creds.sh"
+#ii     source "./src/manage/setup_creds.sh"
 #ii
 #ii Inputs:
 #ii     file    "./secrets/openstack_token.txt"
@@ -16,7 +16,7 @@
 
 set -e
 
-source "./src/script/openstack/setup_token.sh" \
+source "./src/openstack/setup_token.sh" \
     $(cat "./secrets/openstack_token.txt")
 
 export KUBECONFIG="./secrets/kubeconfig.yml"

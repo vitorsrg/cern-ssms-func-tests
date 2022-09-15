@@ -4,7 +4,7 @@
 #i  Configure OpenStack and Kubernetes local env.
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/serve_argo.sh"
+#ii     bash "./src/manage/serve_argo.sh"
 #ii
 #ii Inputs:
 #ii     file    "./secrets/kubeconfig.yml"
@@ -15,7 +15,7 @@
 
 set -ex
 
-source "./src/script/helper/util.sh"
+source "./src/helper/util.sh"
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 

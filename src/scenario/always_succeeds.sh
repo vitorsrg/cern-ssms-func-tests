@@ -12,7 +12,7 @@ pwd
 
 cd "$source_path"
 
-source "./src/script/helper/util.sh"
+source "./src/helper/util.sh"
 
 sleep 10  # prevent pod from finishing too fast
 

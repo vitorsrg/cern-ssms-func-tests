@@ -12,7 +12,7 @@ spec:
       image: bash:5.0.17
       command:
         - /usr/local/bin/bash
-        - "${source_path}/src/script/test/always_fails.sh"
+        - "${source_path}/src/test/always_fails.sh"
       env:
         - name: source_path
           value: "!ch.cern{source_path}"

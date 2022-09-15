@@ -12,7 +12,7 @@ spec:
       image: bash:5.0.17
       command:
         - /usr/local/bin/bash
-        - /mnt/func-tests-src/src/script/test/always_succeeds.sh
+        - /mnt/func-tests-src/src/test/always_succeeds.sh
       env:
         - name: source_path
           value: /mnt/func-tests-src

@@ -16,7 +16,7 @@ spec:
       imagePullPolicy: IfNotPresent
       command:
         - /usr/local/bin/bash
-        - /mnt/func-tests-src/src/script/test/k8s_eos.sh
+        - /mnt/func-tests-src/src/test/k8s_eos.sh
       env:
         - name: source_path
           value: /mnt/func-tests-src

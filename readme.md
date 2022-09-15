@@ -33,7 +33,7 @@ https://gitlab.cern.ch/kubernetes/testing/functional
 
 1.
 
-ksource "./src/script/openstack/setup_k8s.sh" \
+ksource "./src/openstack/setup_k8s.sh" \
     "vsantaro-func-tests--test" \
     "./secrets/kubeconfig2.yml"
 

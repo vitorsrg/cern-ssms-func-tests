@@ -4,9 +4,9 @@
 #i  Configure OpenStack and Kubernetes local env.
 #ii
 #ii Example:
-#ii     bash "./src/script/manage/dispatch_argo.sh"
-#ii     bash "./src/script/manage/dispatch_argo.sh" --watch
-#ii     bash "./src/script/manage/dispatch_argo.sh" --log
+#ii     bash "./src/manage/dispatch_argo.sh"
+#ii     bash "./src/manage/dispatch_argo.sh" --watch
+#ii     bash "./src/manage/dispatch_argo.sh" --log
 #ii
 #ii Inputs:
 #ii     file    "./secrets/kubeconfig.yml"
@@ -17,7 +17,7 @@
 
 set -ex
 
-source "./src/script/helper/util.sh"
+source "./src/helper/util.sh"
 
 export KUBECONFIG="./secrets/kubeconfig.yml"
 
@@ -44,12 +44,7 @@ git push gitlab HEAD:vitorsrg
     <(
         cat "./src/k8s/wf/func_tests.yml" \
             | yq -Y \
-                ".metadata.name += \"$run_suffix\"" \
-            | yq -Y \
-                "(
-                    .. .configMap?.name? // empty
-                    | select(. == \"func-tests-src\")
-                ) += \"$run_suffix\"" \
+                ".metadata.name += \"$run_suffix\""
     ) \
     -p "openstack_token=$(cat ./secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./secrets/gitlab_token.txt)" \

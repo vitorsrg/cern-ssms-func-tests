@@ -5,7 +5,7 @@
 #ii
 #ii
 #ii Example:
-#ii     bash "./src/script/workflow/exec_test.sh"
+#ii     bash "./src/workflow/exec_test.sh"
 #ii
 #ii Inputs:
 #ii     env     run_suffix
@@ -21,10 +21,10 @@ pwd
 
 cd "$source_path"
 
-source "./src/script/helper/util.sh"
-source "./src/script/openstack/setup_token.sh" \
+source "./src/helper/util.sh"
+source "./src/openstack/setup_token.sh" \
     "$openstack_token"
-source "./src/script/openstack/setup_k8s.sh" \
+source "./src/openstack/setup_k8s.sh" \
     "$cluster_name" \
     "/root/kubeconfig.yml"
 
@@ -49,7 +49,7 @@ mkdir -p "/root/output/"
 
 exit_code=$(
     util::status \
-        bash "./src/scenario/controller/$test_name.sh"
+        bash "./src/controller/$test_name.sh"
 )
 
 ################################################################################

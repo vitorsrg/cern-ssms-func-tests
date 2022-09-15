@@ -13,27 +13,14 @@
 
 set -ex
 
-source "./src/script/helper/k8s.sh"
-source "./src/script/helper/util.sh"
+source "./src/helper/k8s.sh"
+source "./src/helper/util.sh"
 
 ################################################################################
 
-cat "./src/scenario/k8s/always_fails.yml" \
+cat "./src/k8s/pod/always_fails.yml" \
     | yq -Y \
         ".metadata.name = \"$test_prefix\"" \
-    | yq -Y \
-        "(
-            .spec.volumes[]
-            | select(.name == \"func-tests-src\")
-            | .configMap.items
-        ) = input.configMap.items" \
-        - \
-        <(yq "." "./data/func_tests_mount.yml") \
-    | yq -Y \
-        "(
-            .. .configMap?.name? // empty
-            | select(. == \"func-tests-src\")
-        ) += \"$run_suffix\"" \
     | k8s::render_var \
         "gitlab_token" \
         "$gitlab_token" \

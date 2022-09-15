@@ -7,7 +7,7 @@
 if [ -n "$_script__helper__util__guard" ]; then return; fi
 _script__helper__util__guard=$(date)
 
-source "./src/script/helper/util.sh"
+source "./src/helper/util.sh"
 
 ################################################################################
 
