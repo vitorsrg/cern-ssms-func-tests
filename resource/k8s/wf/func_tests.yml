@@ -60,9 +60,9 @@ spec:
       - name: max_test_count
         value: "5"
       - name: may_delete_cluster
-        value: "true"
+        value: "false"
       - name: should_delete_existing_cluster
-        value: "true"
+        value: "false"
 
   ##############################################################################
 

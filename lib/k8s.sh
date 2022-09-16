@@ -17,7 +17,7 @@ function k8s::wait_pod_ready () {
 
     if ! kubectl wait pod \
         --for=condition=ready \
-        --timeout=30s \
+        --timeout=300s \
         "$pod_name"; then
         kubectl describe pod \
             "$pod_name"

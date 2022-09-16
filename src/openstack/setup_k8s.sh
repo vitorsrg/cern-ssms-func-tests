@@ -12,8 +12,6 @@
 #u      setup_k8s <cluster_name> <kubeconfig_path>
 ################################################################################
 
-set -ev
-
 cluster_name="$1"
 kubeconfig_path="$2"
 tmpdir=$(mktemp -d)
