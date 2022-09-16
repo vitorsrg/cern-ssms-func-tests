@@ -35,7 +35,7 @@ spec:
   initContainers:
     - {{
           clone_source(
-              gitlab_token, gitlab_url, git_branch, source_path)
+              gitlab_token, gitlab_url, git_branch)
           | indent(6, False)
       }}
   volumes:
