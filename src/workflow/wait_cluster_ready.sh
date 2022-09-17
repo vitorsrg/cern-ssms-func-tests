@@ -32,7 +32,6 @@ while true; do
 
     if [ "$status" = "CREATE_IN_PROGRESS" ]; then
         util::log "Waiting cluster creation."
-        continue
     elif [ "$status" = "CREATE_COMPLETE" ]; then
         util::log "Cluster is ready."
         break
