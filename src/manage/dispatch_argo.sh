@@ -50,7 +50,7 @@ git push origin HEAD
     ) \
     -p "openstack_token=$(cat ./.secrets/openstack_token.txt)" \
     -p "gitlab_token=$(cat ./.secrets/gitlab_token.txt)" \
-    -p "test_names=always_fails always_succeeds k8s_dns_ipv4 k8s_dns_ipv6 k8s_eos" \
+    -p "test_names=misc__always_fails misc__always_succeeds k8s__dns_ipv4 k8s__dns_ipv6 k8s__eos" \
     -p "run_suffix=$run_suffix" \
     "$@"
 
