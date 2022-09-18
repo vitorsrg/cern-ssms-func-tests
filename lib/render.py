@@ -9,7 +9,7 @@
 #ii         -D "gitlab_token" "gitlab_token" \
 #ii         -D "gitlab_url" "gitlab_url" \
 #ii         -D "source_path" "source_path" \
-#ii         "./func_test/k8s_eos/pod.yml.jinja"
+#ii         "./func_test/k8s/eos/pod.yml.jinja"
 ################################################################################
 
 

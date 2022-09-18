@@ -30,16 +30,7 @@ kubectl config set-context \
     --current \
     --namespace=default
 
-pod_suffix=$(
-    cat /dev/urandom \
-        | base64 \
-        | tr -cd '[:lower:][:digit:]' \
-        | head -c 4 \
-        | xargs -i printf '-%s' {}
-)
-
-pod_name="test-$test_key-${test_name//_/-}$run_suffix$pod_suffix"
-export test_prefix="test-$test_key-${test_name//_/-}$run_suffix"
+export test_prefix="test-$test_key-${test_name//[\/_]/-}$run_suffix"
 
 mkdir -p "/root/output/"
 
@@ -47,7 +38,7 @@ mkdir -p "/root/output/"
 
 exit_code=$(
     util::status \
-        bash "./func_test/$test_name/controller.sh"
+        bash "./func_test/${test_name//__/\/}/controller.sh"
 )
 
 ################################################################################

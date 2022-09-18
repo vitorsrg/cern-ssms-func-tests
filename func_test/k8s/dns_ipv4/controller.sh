@@ -20,7 +20,7 @@ set +v -x
 
 ################################################################################
 
-cat "./func_test/k8s_dns_ipv6/pod.yml.jinja" \
+cat "./func_test/k8s/dns_ipv4/pod.yml.jinja" \
     | python "./lib/render.py" \
         -D "gitlab_token" "$gitlab_token" \
         -D "gitlab_url" "$gitlab_url" \

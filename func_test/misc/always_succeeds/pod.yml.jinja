@@ -9,20 +9,16 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: k8s-eos
+  name: always-succeeds
 spec:
   restartPolicy: Never
-  securityContext:
-    seLinuxOptions:
-      type: "spc_t"
   containers:
     - name: main
       image: bash:5.0.17
-      imagePullPolicy: IfNotPresent
       workingDir: /mnt/func_tests/
       command: [/usr/local/bin/bash]
       args:
-        - "./func_test/k8s_eos/main.sh"
+        - "./func_test/misc/always_succeeds/main.sh"
       env:
         - name: source_path
           value: /mnt/func_tests/
@@ -36,10 +32,6 @@ spec:
       volumeMounts:
         - name: func-tests-src
           mountPath: /mnt/func_tests/
-          readOnly: true
-        - name: eos
-          mountPath: /eos
-          mountPropagation: HostToContainer
   initContainers:
     - {{
           clone_source(
@@ -49,6 +41,3 @@ spec:
   volumes:
     - name: func-tests-src
       emptyDir: {}
-    - name: eos
-      hostPath:
-        path: /var/eos
