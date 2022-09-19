@@ -44,7 +44,7 @@ git push origin HEAD
 echo "$1"
 echo "${@:2}"
 
-yq -jn \
+yq -Y -jn \
     'reduce inputs as $xi ({}; . * $xi)' \
     "$1" \
     "./resource/scenario/default.yml"
