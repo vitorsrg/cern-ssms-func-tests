@@ -6,8 +6,12 @@
 #ii Example:
 #ii     bash "./src/manage/dispatch.sh" \
 #ii         "./func_test/k8s/dns_ipv6/scenario.yml"
-#ii     bash "./src/manage/dispatch.sh" --watch
-#ii     bash "./src/manage/dispatch.sh" --log
+#ii     bash "./src/manage/dispatch.sh" \
+#ii         "./func_test/k8s/dns_ipv6/scenario.yml" \
+#ii         --watch
+#ii     bash "./src/manage/dispatch.sh" \
+#ii         "./func_test/k8s/dns_ipv6/scenario.yml" \
+#ii         --log
 #ii
 #ii Inputs:
 #ii     file    "./.secrets/kubeconfig.yml"
