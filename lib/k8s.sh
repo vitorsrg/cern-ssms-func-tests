@@ -13,7 +13,7 @@ source "./lib/util.sh"
 
 
 function k8s::random () {
-    cat /dev/urandom \
+    cat "/dev/urandom" \
         | base64 \
         | tr -cd '[:lower:][:digit:]' \
         | head -c $1 \

@@ -44,6 +44,15 @@ git push origin HEAD
 echo "$1"
 echo "${@:2}"
 
+jq -jn \
+    '
+        reduce
+            inputs as $xi
+            ({}; . * $xi)
+    ' \
+    "$1" \
+    "./resource/scenario/default.yml"
+
 # ./bin/argo.bin submit \
 #     <(
 #         cat "./resource/k8s/wf/func_tests.yml" \
