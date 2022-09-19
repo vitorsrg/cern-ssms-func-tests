@@ -41,8 +41,7 @@ git push origin HEAD
 
 ################################################################################
 
-./bin/argo.bin \
-    submit \
+./bin/argo.bin submit \
     <(
         cat "./resource/k8s/wf/func_tests.yml" \
             | yq -Y \

@@ -12,6 +12,15 @@ source "./lib/util.sh"
 ################################################################################
 
 
+function k8s::random () {
+    cat /dev/urandom \
+        | base64 \
+        | tr -cd '[:lower:][:digit:]' \
+        | head -c $1 \
+        | xargs -i printf '-%s' {}
+}
+
+
 function k8s::wait_pod_ready () {
     pod_name="$1"
 

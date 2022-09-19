@@ -1,0 +1,17 @@
+################################################################################
+#
+################################################################################
+
+gitlab_url: gitlab.cern.ch/kubernetes/testing/functional.git
+git_branch: vitorsrg
+source_path: /mnt/func-tests-src
+cluster_name: "vsantaro-func-tests--test$run_suffix"
+cluster_template: "kubernetes-1.22.9-1"
+cluster_node_count: "4"
+cluster_labels_json: {}
+may_create_cluster: "true"
+may_fail_if_exists: "true"
+test_names: []
+max_test_count: "5"
+may_delete_cluster: "true"
+should_delete_existing_cluster: "true"

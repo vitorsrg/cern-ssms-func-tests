@@ -57,8 +57,6 @@ spec:
       - name: may_fail_if_exists
         value: "false"
       - name: test_names
-      - name: max_test_count
-        value: "5"
       - name: may_delete_cluster
         value: "false"
       - name: should_delete_existing_cluster
@@ -100,8 +98,6 @@ spec:
                   value: "{{workflow.parameters.source_path}}"
                 - name: test_names
                   value: "{{workflow.parameters.test_names}}"
-                - name: max_test_count
-                  value: "{{workflow.parameters.max_test_count}}"
 
           ######################################################################
 
@@ -226,7 +222,6 @@ spec:
           - name: gitlab_url
           - name: git_branch
           - name: test_names
-          - name: max_test_count
           - name: source_path
       outputs:
         parameters:
