@@ -4,7 +4,8 @@
 #i  Configure OpenStack and Kubernetes local env.
 #ii
 #ii Example:
-#ii     bash "./src/manage/dispatch.sh"
+#ii     bash "./src/manage/dispatch.sh" \
+#ii         "./func_test/k8s/dns_ipv6/scenario.yml"
 #ii     bash "./src/manage/dispatch.sh" --watch
 #ii     bash "./src/manage/dispatch.sh" --log
 #ii
@@ -35,6 +36,9 @@ git commit -S -a -m 'fixup' || true
 git push origin HEAD
 
 ################################################################################
+
+echo "${@[1]}"
+echo "${@:2}"
 
 # ./bin/argo.bin submit \
 #     <(
