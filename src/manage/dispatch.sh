@@ -46,8 +46,8 @@ echo "${@:2}"
 
 yq -Y -jn \
     'reduce inputs as $xi ({}; . * $xi)' \
-    "$1" \
-    "./resource/scenario/default.yml"
+    "./resource/scenario/default.yml" \
+    "$1"
 
 # ./bin/argo.bin submit \
 #     <(
