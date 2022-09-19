@@ -46,9 +46,7 @@ echo "${@:2}"
 
 jq -jn \
     '
-        reduce
-            inputs as $xi
-            ({}; . * $xi)
+        reduce inputs as $xi ({}; . * $xi)
     ' \
     "$1" \
     "./resource/scenario/default.yml"
